@@ -1,18 +1,18 @@
 
-// UnderWriting by Seokhoon Joo 2020-09-09 
+// UnderWriting by Seokhoon Joo 2020-09-09
 #include <Rcpp.h>
 using namespace Rcpp;
 
 // [[Rcpp::export]]
-NumericVector uniq_day(StringMatrix id, NumericVector from, NumericVector to) {
+NumericVector rcpp_uniq_day(StringMatrix id, NumericVector from, NumericVector to) {
 
   // split points
   std::vector<int> rows(1);
   for (int i = 0; i < id.ncol(); i++) {
     StringVector vec = id( _ , i);
-    StringVector::iterator ip = vec.begin();
+    StringVector::iterator ip;
     int row = 0;
-    for (ip; ip != vec.end()-1; ++ip) {
+    for (ip = vec.begin(); ip != vec.end()-1; ++ip) {
       if (strcmp(*ip, *(ip + 1)) != 0) {
         //std::cout << *ip << *(ip + 1) << std::endl;
         row += 1;
@@ -33,7 +33,7 @@ NumericVector uniq_day(StringMatrix id, NumericVector from, NumericVector to) {
     //std::cout << rows[k] << rows[k+1] << std::endl;
     std::vector<int> s = std::vector<int>(from.begin()+rows[k], from.begin()+rows[k+1]);
     std::vector<int> e = std::vector<int>(to.begin()+rows[k], to.begin()+rows[k+1]);
-    // nrow 
+    // nrow
     int n = s.size();
     std::vector<int> days(0);
     for (int j = 0; j < n; j++) {
