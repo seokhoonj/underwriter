@@ -1,5 +1,6 @@
 
 // UnderWriting by Seokhoon Joo 2020-09-09
+#include <vector>
 #include <Rcpp.h>
 using namespace Rcpp;
 
