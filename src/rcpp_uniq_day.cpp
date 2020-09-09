@@ -7,8 +7,8 @@ using namespace Rcpp;
 NumericVector rcpp_uniq_day(StringMatrix id, NumericVector from, NumericVector to) {
 
   // split points
-  std::vector<int> rows(1);
-  for (int i = 0; i < id.ncol(); i++) {
+  std::vector<int> rows(1, 0);
+  for (int i = 0; i < id.ncol(); ++i) {
     StringVector vec = id( _ , i);
     StringVector::iterator ip;
     int row = 0;
@@ -28,15 +28,15 @@ NumericVector rcpp_uniq_day(StringMatrix id, NumericVector from, NumericVector t
 
   // calculate the length between from to end
   int nrows = rows.size();
-  std::vector<int> lens(0);
-  for (int k = 0; k < nrows-1; k++) {
+  std::vector<int> lens;
+  for (int k = 0; k < nrows-1; ++k) {
     //std::cout << rows[k] << rows[k+1] << std::endl;
     std::vector<int> s = std::vector<int>(from.begin()+rows[k], from.begin()+rows[k+1]);
     std::vector<int> e = std::vector<int>(to.begin()+rows[k], to.begin()+rows[k+1]);
     // nrow
     int n = s.size();
-    std::vector<int> days(0);
-    for (int j = 0; j < n; j++) {
+    std::vector<int> days;
+    for (int j = 0; j < n; ++j) {
       int m = e[j] - s[j] + 1; // size of allocation
       std::vector<int> out(m);
       out[0] = s[j];
