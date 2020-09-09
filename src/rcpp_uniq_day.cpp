@@ -32,7 +32,6 @@ NumericVector rcpp_uniq_day(StringMatrix id, NumericVector from, NumericVector t
   std::vector<int> lens(0);
   for (int k = 0; k < nrows-1; k++) {
     // length of rows
-    int n = rows[k+1]-rows[k];
     std::vector<int> days(0);
     for (int j = rows[k]; j < rows[k+1]; ++j) {
       int m = to[j] - from[j] + 1;
