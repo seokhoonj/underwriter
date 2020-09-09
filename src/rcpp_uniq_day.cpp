@@ -34,12 +34,14 @@ NumericVector rcpp_uniq_day(StringMatrix id, NumericVector from, NumericVector t
   int nrows = rows.size();
   std::vector<int> lens;
   std::cout << "lens max_size: " << lens.max_size() << std::endl;
-  for (int k = 0; k < nrows-1; k++) {
+  for (int k = 0; k < nrows-1; ++k) {
     //std::cout << rows[k] << rows[k+1] << std::endl;
     std::vector<int> s = std::vector<int>(from.begin()+rows[k], from.begin()+rows[k+1]);
     std::vector<int> e = std::vector<int>(to.begin()+rows[k], to.begin()+rows[k+1]);
     // nrow
     int n = s.size();
+    std::cout << "sliced id from size: " << s.size() << std::endl;
+    std::cout << "sliced id to   size: " << e.size() << std::endl;
     std::vector<int> days(0);
     for (int j = 0; j < n; ++j) {
       int m = e[j] - s[j] + 1; // size of allocation
