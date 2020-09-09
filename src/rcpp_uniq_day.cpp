@@ -45,11 +45,10 @@ NumericVector rcpp_uniq_day(StringMatrix id, NumericVector from, NumericVector t
     std::cout << "sliced id to   size: " << e.size() << std::endl;
     for (int j = 0; j < n; ++j) {
       int m = e[j] - s[j] + 1; // size of allocation
-      Rprintf(m);
-      std::cout << "m : " << m << std::endl;
       std::vector<int> out(m);
       out[0] = s[j];
       days.push_back(out[0]);
+      std::cout << "m : " << std::dec << m << std::endl;
       for (int i = 1; i < m; ++i) {
         out[i] = out[i-1] + 1;
         days.push_back(out[i]);
