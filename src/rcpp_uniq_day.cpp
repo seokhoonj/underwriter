@@ -1,6 +1,5 @@
 
 // UnderWriting by Seokhoon Joo 2020-09-09
-#include <vector>
 #include <Rcpp.h>
 using namespace Rcpp;
 
@@ -25,41 +24,29 @@ NumericVector rcpp_uniq_day(StringMatrix id, NumericVector from, NumericVector t
     }
   }
   sort(rows.begin(), rows.end());
-  std::cout << "rows size: " << rows.size() << std::endl;
   rows.resize(std::unique(rows.begin(), rows.end()) - rows.begin());
   rows.push_back(id.nrow());
-  std::cout << "rows resize: " << rows.size() << std::endl;
 
   // calculate the length between from to end
   int nrows = rows.size();
-  std::vector<int> lens;
-  std::cout << "lens max_size: " << lens.max_size() << std::endl;
-  for (int k = 0; k < nrows-1; ++k) {
-    //std::cout << rows[k] << rows[k+1] << std::endl;
-    std::vector<int> s = std::vector<int>(rows[k], rows[k+1]);
-    std::vector<int> e = std::vector<int>(rows[k], rows[k+1]);
-    // nrow
-    int n = s.size();
+  std::vector<int> lens(0);
+  for (int k = 0; k < nrows-1; k++) {
+    // length of rows
+    int n = rows[k+1]-rows[k];
     std::vector<int> days(0);
-    std::cout << "sliced id from size: " << s.size() << std::endl;
-    std::cout << "sliced id to   size: " << e.size() << std::endl;
-    for (int j = 0; j < n; ++j) {
-      int m = e[j] - s[j] + 1; // size of allocation
+    for (int j = rows[k]; j < rows[k+1]; ++j) {
+      int m = to[j] - from[j] + 1;
       std::vector<int> out(m);
-      out[0] = s[j];
+      out[0] = from[j];
       days.push_back(out[0]);
-      std::cout << "m : " << std::dec << m << std::endl;
-      for (int i = 1; i < m; ++i) {
+      for (int i = 1; i < m; i++) {
         out[i] = out[i-1] + 1;
         days.push_back(out[i]);
       }
     }
-    std::cout << "days: " << days.size() << std::endl;
     sort(days.begin(), days.end());
-    days.resize(std::unique(days.begin(), days.end()) - days.begin());
-    std::cout << "days resize: " << days.size() << std::endl;
+    days.resize(unique(days.begin(), days.end()) - days.begin());
     lens.push_back(days.size());
   }
-  std::cout << "lens: " << lens.size() << std::endl;
   return wrap(lens);
 }
