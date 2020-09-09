@@ -8,14 +8,14 @@ NumericVector rcpp_uniq_day(StringMatrix id, NumericVector from, NumericVector t
 
   // split points
   std::vector<int> rows(1, 0);
-  std::cout << "rows max_size: " << rows.max_size() << std::endl;
+  //std::cout << "rows max_size: " << rows.max_size() << std::endl;
   for (int i = 0; i < id.ncol(); ++i) {
     StringVector vec = id( _ , i);
     StringVector::iterator ip;
     int row = 0;
     for (ip = vec.begin(); ip != vec.end()-1; ++ip) {
       if (strcmp(*ip, *(ip + 1)) != 0) {
-        //std::cout << *ip << *(ip + 1) << std::endl;
+        //std::cout << *ip << " " << *(ip + 1) << std::endl;
         row += 1;
         rows.push_back(row);
       } else {
