@@ -43,14 +43,12 @@ NumericVector rcpp_uniq_day(StringMatrix id, NumericVector from, NumericVector t
     std::vector<int> days;
     for (int j = 0; j < n; ++j) {
       int m = e[j] - s[j] + 1; // size of allocation
-      //std::vector<int> out(0);
-      //out[0] = s[j];
-      //days.push_back(out[0]);
-      days[0] = s[j];
+      std::vector<int> out(m);
+      out[0] = s[j];
+      days.push_back(out[0]);
       for (int i = 1; i < m; ++i) {
-        //out[i] = out[i-1] + 1;
-        //days.push_back(out[i]);
-        days.push_back(s[j]++);
+        out[i] = out[i-1] + 1;
+        days.push_back(out[i]);
       }
     }
     std::cout << "days: " << days.size() << std::endl;
