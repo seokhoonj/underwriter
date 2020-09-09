@@ -8,8 +8,10 @@
 uniq_hos_day <- function(data, var_id, var_from, var_to) {
   # check arguments
   if (missing(data)) stop('Please check input variables.')
-  if (class(data[[var_from]]) != 'Date' | any(is.na(data[[var_from]]))) stop('Please check the var_from data type.')
-  if (class(data[[var_to]])   != 'Date' | any(is.na(data[[var_to]]))) stop('Please check the var_to data type.')
+  if (class(data[[var_from]]) != 'Date') stop("Please check the 'var_from' column's data type.")
+  if (class(data[[var_to]]) != 'Date') stop("Please check the 'var_to' column's data type.")
+  if (any(is.na(data[[var_from]]))) stop("Please check the 'missing data' in 'var_from' column.")
+  if (any(is.na(data[[var_to]]))) stop("Please check the 'missing data' in 'var_to' column.")
 
   # require data.table
   suppressPackageStartupMessages(require(data.table))
@@ -20,6 +22,7 @@ uniq_hos_day <- function(data, var_id, var_from, var_to) {
   id = as.matrix(data[, ..var_id])
   from = data[[var_from]]
   to = data[[var_to]]
+  if (any(to - from < 0)) stop("Some 'var_from' data are greater than 'var_to' data.")
 
   # cpp code
   hos <- rcpp_uniq_day(id, from ,to)
