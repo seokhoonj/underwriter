@@ -8,11 +8,11 @@
 uniq_hos_day <- function(data, var_id, var_from, var_to) {
   # check arguments
   if (missing(data)) stop('Please check input variables.')
-  if (class(data[[var_from]]) != 'Date') stop('Please check the var_from data type.')
-  if (class(data[[var_to]])   != 'Date') stop('Please check the var_to data type.')
+  if (class(data[[var_from]]) != 'Date' | any(is.na(data[[var_from]]))) stop('Please check the var_from data type.')
+  if (class(data[[var_to]])   != 'Date' | any(is.na(data[[var_to]]))) stop('Please check the var_to data type.')
 
   # require data.table
-  require(data.table)
+  suppressPackageStartupMessages(require(data.table))
   setDT(data)
   setorderv(data, var_id)
 
