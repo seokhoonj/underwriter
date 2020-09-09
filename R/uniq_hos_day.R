@@ -15,7 +15,7 @@ uniq_hos_day <- function(data, var_id, var_from, var_to) {
 
   # require data.table
   suppressPackageStartupMessages(require(data.table))
-  setDT(data)
+  data <- as.data.table(data)
   setorderv(data, var_id)
 
   # set arguments
