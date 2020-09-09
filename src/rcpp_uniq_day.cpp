@@ -26,7 +26,7 @@ NumericVector rcpp_uniq_day(StringMatrix id, NumericVector from, NumericVector t
   }
   sort(rows.begin(), rows.end());
   std::cout << "rows size: " << rows.size() << std::endl;
-  rows.resize(unique(rows.begin(), rows.end()) - rows.begin());
+  rows.resize(std::unique(rows.begin(), rows.end()) - rows.begin());
   rows.push_back(id.nrow());
   std::cout << "rows resize: " << rows.size() << std::endl;
 
@@ -53,7 +53,7 @@ NumericVector rcpp_uniq_day(StringMatrix id, NumericVector from, NumericVector t
     }
     std::cout << "days: " << days.size() << std::endl;
     sort(days.begin(), days.end());
-    days.resize(unique(days.begin(), days.end()) - days.begin());
+    days.resize(std::unique(days.begin(), days.end()) - days.begin());
     std::cout << "days resize: " << days.size() << std::endl;
     lens.push_back(days.size());
   }
