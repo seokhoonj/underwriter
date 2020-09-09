@@ -24,7 +24,7 @@ NumericVector rcpp_uniq_day(StringMatrix id, NumericVector from, NumericVector t
     }
   }
   sort(rows.begin(), rows.end());
-  rows.resize(unique(rows.begin(), rows.end()) - rows.begin());
+  //rows.resize(unique(rows.begin(), rows.end()) - rows.begin());
   rows.push_back(id.nrow());
 
   // calculate the length between from to end
@@ -48,7 +48,7 @@ NumericVector rcpp_uniq_day(StringMatrix id, NumericVector from, NumericVector t
       }
     }
     sort(days.begin(), days.end());
-    days.resize(unique(days.begin(), days.end()) - days.begin());
+    //days.resize(unique(days.begin(), days.end()) - days.begin());
     lens.push_back(days.size());
   }
   return wrap(lens);
