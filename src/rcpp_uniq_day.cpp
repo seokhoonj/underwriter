@@ -40,7 +40,7 @@ NumericVector rcpp_uniq_day(StringMatrix id, NumericVector from, NumericVector t
     std::vector<int> e = std::vector<int>(to.begin()+rows[k], to.begin()+rows[k+1]);
     // nrow
     int n = s.size();
-    std::vector<int> days;
+    std::vector<int> days(1000);
     for (int j = 0; j < n; ++j) {
       int m = e[j] - s[j] + 1; // size of allocation
       std::vector<int> out(m);
