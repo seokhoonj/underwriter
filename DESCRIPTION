@@ -9,6 +9,7 @@ Description: This packages will make the Underwriting project easier and faster.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
+Depends: R (>= 3.5.0)
 Imports: Rcpp (>= 1.0.5), data.table
 LinkingTo: Rcpp
 RoxygenNote: 7.1.1
