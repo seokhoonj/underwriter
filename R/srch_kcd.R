@@ -28,7 +28,7 @@ srch_kcd <- function (kcd, lang = "kr") {
     cat(paste0(rep("=", times = line), collapse = ""), "\n")
     cat(result, "\n")
     cat(paste0(rep("=", times = line), collapse = ""), "\n")
-    df
+    invisible(df)
   } else {
     cat("No kcd code is found in the kcd book.")
   }
