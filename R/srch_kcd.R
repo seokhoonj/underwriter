@@ -11,7 +11,7 @@ srch_kcd <- function (kcd, lang = "kr") {
 
   if (any(grepl(toupper(kcd), kcd_book$code))) {
     if (lang == "kr") {
-      df <- kcd_book[grepl(kcd, code, ignore.case = TRUE), c("code", "kr")]
+      df <- kcd_book[grepl(kcd, kcd_book$code, ignore.case = TRUE), c("code", "kr")]
       nc <- max(nchar(df$code))
       rc <- max(nchar(df$kr))
       line <- nc + 2 + ceiling(rc * 1.5)
@@ -19,7 +19,7 @@ srch_kcd <- function (kcd, lang = "kr") {
                               ": ", df$kr), collapse = "\n")
     }
     else {
-      df <- kcd_book[grepl(kcd, code, ignore.case = TRUE), c("code", "us")]
+      df <- kcd_book[grepl(kcd, kcd_book$code, ignore.case = TRUE), c("code", "us")]
       nc <- max(nchar(df$code))
       rc <- max(nchar(df$us))
       line <- nc + 2 + rc
