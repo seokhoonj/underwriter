@@ -3,5 +3,6 @@
 exportPattern("^[[:alpha:]]+")
 importFrom(Rcpp, evalCpp)
 import(data.table)
+import(stringi)
 useDynLib(underwriter, .registration = TRUE)
 
