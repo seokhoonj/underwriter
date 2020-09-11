@@ -8,7 +8,7 @@ srch_kcd <- function (kcd, lang = "kr") {
   if (missing(kcd))
     stop('Please insert kcd code string or regular expression.')
 
-  if (any(grepl(kcd, kcd_book$code))) {
+  if (any(grepl(toupper(kcd), kcd_book$code))) {
     if (lang == "kr") {
       df <- kcd_book[grepl(kcd, code, ignore.case = TRUE), c("code", "kr")]
       nc <- max(nchar(df$code))
