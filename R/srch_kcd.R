@@ -14,21 +14,23 @@ srch_kcd <- function (kcd, lang = "kr") {
       df <- kcd_book[grepl(kcd, kcd_book$code, ignore.case = TRUE), c("code", "kr")]
       nc <- max(nchar(df$code))
       rc <- max(nchar(df$kr))
-      line <- nc + 2 + ceiling(rc * 1.5)
+      iter <- nc + 3 + ceiling(rc * 1.6)
+      line <- paste0(rep("=", times = iter), collapse = "")
       result <- paste0(paste0(stri_pad_right(df$code, width = nc),
-                              ": ", df$kr), collapse = "\n")
+                              " | ", df$kr), collapse = "\n")
     }
     else {
       df <- kcd_book[grepl(kcd, kcd_book$code, ignore.case = TRUE), c("code", "us")]
       nc <- max(nchar(df$code))
       rc <- max(nchar(df$us))
-      line <- nc + 2 + rc
+      iter <- nc + 3 + rc
+      line <- paste0(rep("=", times = iter), collapse = "")
       result <- paste0(paste0(stri_pad_right(df$code, width = nc),
-                              ": ", df$us), collapse = "\n")
+                              " | ", df$us), collapse = "\n")
     }
-    cat(paste0(rep("=", times = line), collapse = ""), "\n")
+    cat(line,   "\n")
     cat(result, "\n")
-    cat(paste0(rep("=", times = line), collapse = ""), "\n")
+    cat(line,   "\n")
     invisible(df)
   } else {
     cat("No kcd code is found in the kcd book.")
