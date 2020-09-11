@@ -9,12 +9,14 @@ srch_kcd = function(kcd, lang = 'kr') {
   nc <- max(nchar(df$code))
   if (lang == 'kr') {
     rc <- max(nchar(df$kr))
+    line <- nc + 2 + rc
     result <- paste0(paste0(stri_pad_right(df$code, width = nc), ': ', df$kr), collapse = '\n')
   } else {
     rc <- max(nchar(df$us))
+    line <- nc + 2 + rc * 2
     result <- paste0(paste0(stri_pad_right(df$code, width = nc), ': ', df$us), collapse = '\n')
   }
-  cat(paste0(rep('=', times = nc + 2 + rc), collapse=''), '\n')
+  cat(paste0(rep('=', times = line), collapse=''), '\n')
   cat(result, '\n')
-  cat(paste0(rep('=', times = nc + 2 + rc), collapse=''), '\n')
+  cat(paste0(rep('=', times = line), collapse=''), '\n')
 }
