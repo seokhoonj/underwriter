@@ -13,8 +13,7 @@ uniq_hos_day <- function(data, var_id, var_from, var_to) {
   if (any(is.na(data[[var_from]]))) stop("Please check the 'missing data' in 'var_from' column.")
   if (any(is.na(data[[var_to]]))) stop("Please check the 'missing data' in 'var_to' column.")
 
-  # require data.table
-  suppressPackageStartupMessages(require(data.table))
+  # transfrom to data.table
   data <- as.data.table(data)
   setorderv(data, var_id)
 
