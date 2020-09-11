@@ -2,12 +2,18 @@
 % Please edit documentation in R/uniq_hos_day.R
 \name{uniq_hos_day}
 \alias{uniq_hos_day}
-\title{uniq_hos_day Function}
+\title{Calculate unique hospitalization days}
 \usage{
 uniq_hos_day(data, var_id, var_from, var_to)
 }
 \arguments{
-\item{data.frame}{or data.table with hospitalization data like id, icd code, start date, end date.}
+\item{data}{or data.table with hospitalization data like id, icd code, start date, end date.}
+
+\item{var_id}{grouping column string}
+
+\item{var_from}{start date column string}
+
+\item{var_to}{end date column string}
 }
 \description{
 you can calculate the hospitalization days by several groups like id, icd code
