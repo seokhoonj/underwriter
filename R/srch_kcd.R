@@ -8,16 +8,18 @@ srch_kcd <- function (kcd, lang = "kr") {
   if (missing(kcd))
     stop('Please insert kcd code string or regular expression.')
 
-  if (any(grepl(kcd, kcd_book$code, ignore.case = TRUE))) {
-    df <- kcd_book[grepl(kcd, code, ignore.case = TRUE)]
-    nc <- max(nchar(df$code))
+  if (any(grepl(kcd, kcd_book$code))) {
     if (lang == "kr") {
+      df <- kcd_book[grepl(kcd, code), c("code", "kr")]
+      nc <- max(nchar(df$code))
       rc <- max(nchar(df$kr))
       line <- nc + 2 + ceiling(rc * 1.5)
       result <- paste0(paste0(stri_pad_right(df$code, width = nc),
                               ": ", df$kr), collapse = "\n")
     }
     else {
+      df <- kcd_book[grepl(kcd, code), c("code", "us")]
+      nc <- max(nchar(df$code))
       rc <- max(nchar(df$us))
       line <- nc + 2 + rc
       result <- paste0(paste0(stri_pad_right(df$code, width = nc),
@@ -29,4 +31,5 @@ srch_kcd <- function (kcd, lang = "kr") {
   } else {
     cat("No kcd code is found in the kcd book.")
   }
+  return(df)
 }
