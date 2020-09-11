@@ -1,9 +1,10 @@
 #' Search description of kcd
 #'
 #' you can search kcd and find its description in the kcd book.
-#' @param string A kcd code
+#' @param string A kcd code or regular expression
 #' @examples
 #' srch_kcd('J00')
+#' srch_kcd('^M51$')
 srch_kcd <- function (kcd, lang = "kr") {
   if (missing(kcd))
     stop('Please insert kcd code string or regular expression.')
