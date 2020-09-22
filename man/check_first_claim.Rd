@@ -4,12 +4,12 @@
 \alias{check_first_claim}
 \title{Create first claim boolean matrix by insured id from claim boolean matrix}
 \usage{
-check_first_claim(id, data)
+check_first_claim(data, id)
 }
 \arguments{
-\item{id}{is a insured id numeric vector}
-
 \item{data}{is a boolean matrix (claim kcd code exists or not)}
+
+\item{id}{is a insured id numeric vector}
 }
 \description{
 you can create the first claim matrix considering insured id.
