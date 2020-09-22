@@ -6,13 +6,13 @@
 using namespace Rcpp;
 
 // rcpp_first_claim
-NumericVector rcpp_first_claim(std::vector<int> id, std::vector<int> claim);
+NumericVector rcpp_first_claim(std::vector<double> id, std::vector<double> claim);
 RcppExport SEXP _underwriter_rcpp_first_claim(SEXP idSEXP, SEXP claimSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< std::vector<int> >::type id(idSEXP);
-    Rcpp::traits::input_parameter< std::vector<int> >::type claim(claimSEXP);
+    Rcpp::traits::input_parameter< std::vector<double> >::type id(idSEXP);
+    Rcpp::traits::input_parameter< std::vector<double> >::type claim(claimSEXP);
     rcpp_result_gen = Rcpp::wrap(rcpp_first_claim(id, claim));
     return rcpp_result_gen;
 END_RCPP

@@ -6,11 +6,11 @@
 using namespace Rcpp;
 
 // [[Rcpp::export]]
-NumericVector rcpp_first_claim(std::vector<int> id, std::vector<int> claim) {
+NumericVector rcpp_first_claim(std::vector<double> id, std::vector<double> claim) {
   // locations vector
-  std::vector<int> rows(1, 0);
-  std::vector<int>::iterator ip;
-  int row_p = 0;
+  std::vector<double> rows(1, 0);
+  std::vector<double>::iterator ip;
+  double row_p = 0;
   for (ip = id.begin(); ip != id.end(); ++ip) {
     if (*ip != *(ip+1)) {
       row_p += 1;
@@ -20,12 +20,12 @@ NumericVector rcpp_first_claim(std::vector<int> id, std::vector<int> claim) {
     }
   }
   // result vector
-  std::vector<int> result;
+  std::vector<double> result;
   result.resize(claim.size());
-  std::vector<int>::iterator iq;
+  std::vector<double>::iterator iq;
   for (iq = rows.begin(); iq != rows.end(); ++iq) {
-    int n1 = 0;
-    for (int i = *iq; i < *(iq+1); ++i) {
+    double n1 = 0;
+    for (double i = *iq; i < *(iq+1); ++i) {
       if (n1 == 0 && claim[i] == 1) {
         result[i] = 1;
         n1 = 1;
