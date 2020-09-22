@@ -6,7 +6,7 @@
 using namespace Rcpp;
 
 // [[Rcpp::export]]
-NumericVector rcpp_first_claim(std::vector<double> id, std::vector<double> claim) {
+NumericVector rcpp_first_claim(std::vector<double> claim, std::vector<double> id) {
   // locations vector
   std::vector<double> rows(1, 0);
   std::vector<double>::iterator ip;
