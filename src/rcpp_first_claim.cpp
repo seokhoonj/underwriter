@@ -9,7 +9,6 @@ using namespace Rcpp;
 NumericVector first_claim(std::vector<int> id, std::vector<int> claim) {
   // locations vector
   std::vector<int> rows(1, 0);
-  rows.reserve(id.size());
   std::vector<int>::iterator ip;
   int row_p = 0;
   for (ip = id.begin(); ip != id.end(); ++ip) {
@@ -28,7 +27,7 @@ NumericVector first_claim(std::vector<int> id, std::vector<int> claim) {
   for (iq = rows.begin(); iq != rows.end(); ++iq) {
     int n1 = 0;
     for (int i = *iq; i < *(iq+1); ++i) {
-      if (n1 == 0 & claim[i] == 1) {
+      if (n1 == 0 && claim[i] == 1) {
         result[i] = 1;
         n1 = 1;
       } else {

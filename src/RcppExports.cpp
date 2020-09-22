@@ -6,7 +6,7 @@
 using namespace Rcpp;
 
 // first_claim
-std::vector<int> first_claim(std::vector<int> id, std::vector<int> claim);
+NumericVector first_claim(std::vector<int> id, std::vector<int> claim);
 RcppExport SEXP _underwriter_first_claim(SEXP idSEXP, SEXP claimSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
