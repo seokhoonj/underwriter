@@ -6,7 +6,7 @@
 using namespace Rcpp;
 
 // [[Rcpp::export]]
-std::vector<int> first_claim(std::vector<int> id, std::vector<int> claim) {
+NumericVector first_claim(std::vector<int> id, std::vector<int> claim) {
   // locations vector
   std::vector<int> rows(1, 0);
   rows.reserve(id.size());
@@ -36,5 +36,5 @@ std::vector<int> first_claim(std::vector<int> id, std::vector<int> claim) {
       }
     }
   }
-  return result;
+  return wrap(result);
 }
