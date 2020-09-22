@@ -7,5 +7,5 @@
 check_claim <- function(code, target) {
   vapply(code,
          function(x) as.integer(grepl(x, target, perl = TRUE)),
-         FUN.VALUE = integer(length(target)))
+         FUN.VALUE = integer(length(target)), USE.NAMES = FALSE)
 }
