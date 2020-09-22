@@ -37,7 +37,7 @@ uniq_hos_day <- function(data, var_id, var_from, var_to) {
   if (any(to - from < 0)) stop("Some 'var_from' data are greater than 'var_to' data.")
 
   # cpp code
-  hos <- rcpp_uniq_day(id, from ,to)
+  hos <- underwriter::rcpp_uniq_day(id, from ,to)
 
   # binding with unique ids
   data_uniq <- unique(data[, ..var_id])
