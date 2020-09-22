@@ -4,7 +4,7 @@
 #' @param id is a insured id numeric vector
 #' @param data is a boolean matrix (claim kcd code exists or not)
 #' @keywords first claim
-first_claim <- function(id, data) {
+check_first_claim <- function(id, data) {
   if (!is.numeric(id))
     id <- as.numeric(id)
   if (!is.matrix(data))
