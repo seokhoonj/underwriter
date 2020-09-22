@@ -6,7 +6,7 @@
 using namespace Rcpp;
 
 // [[Rcpp::export]]
-NumericVector first_claim(std::vector<int> id, std::vector<int> claim) {
+NumericVector rcpp_first_claim(std::vector<int> id, std::vector<int> claim) {
   // locations vector
   std::vector<int> rows(1, 0);
   std::vector<int>::iterator ip;
@@ -23,7 +23,6 @@ NumericVector first_claim(std::vector<int> id, std::vector<int> claim) {
   std::vector<int> result;
   result.resize(claim.size());
   std::vector<int>::iterator iq;
-  int row_q = 0;
   for (iq = rows.begin(); iq != rows.end(); ++iq) {
     int n1 = 0;
     for (int i = *iq; i < *(iq+1); ++i) {
