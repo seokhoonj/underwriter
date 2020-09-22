@@ -1,10 +1,10 @@
 #' Create first claim boolean matrix by insured id from claim boolean matrix
 #'
-#' you can create the first claim matrix considering insured id.
+#' you can create the 1st claim matrix considering insured id.
 #' @param data is a boolean matrix (claim kcd code exists or not)
 #' @param id is a insured id numeric vector
-#' @keywords first claim
-check_first_claim <- function(data, id) {
+#' @keywords 1st claim
+check_claim_1st <- function(data, id) {
   if (!is.numeric(id))
     id <- as.numeric(id)
   if (!is.matrix(data))
