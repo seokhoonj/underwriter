@@ -5,6 +5,18 @@
 
 using namespace Rcpp;
 
+// first_claim
+std::vector<int> first_claim(std::vector<int> id, std::vector<int> claim);
+RcppExport SEXP _underwriter_first_claim(SEXP idSEXP, SEXP claimSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< std::vector<int> >::type id(idSEXP);
+    Rcpp::traits::input_parameter< std::vector<int> >::type claim(claimSEXP);
+    rcpp_result_gen = Rcpp::wrap(first_claim(id, claim));
+    return rcpp_result_gen;
+END_RCPP
+}
 // rcpp_uniq_day
 NumericVector rcpp_uniq_day(StringMatrix id, NumericVector from, NumericVector to);
 RcppExport SEXP _underwriter_rcpp_uniq_day(SEXP idSEXP, SEXP fromSEXP, SEXP toSEXP) {
@@ -20,6 +32,7 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_underwriter_first_claim", (DL_FUNC) &_underwriter_first_claim, 2},
     {"_underwriter_rcpp_uniq_day", (DL_FUNC) &_underwriter_rcpp_uniq_day, 3},
     {NULL, NULL, 0}
 };
