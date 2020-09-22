@@ -7,11 +7,12 @@
 srch_kcd(kcd, lang = "kr")
 }
 \arguments{
-\item{string}{A kcd code}
+\item{string}{A kcd code or regular expression}
 }
 \description{
 you can search kcd and find its description in the kcd book.
 }
 \examples{
 srch_kcd('J00')
+srch_kcd('^M51$')
 }
