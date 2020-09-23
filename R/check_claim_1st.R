@@ -5,8 +5,8 @@
 #' @param id is a insured id numeric vector
 #' @keywords 1st claim
 check_claim_1st <- function(data, id) {
-  if (!is.numeric(id))
-    id <- as.numeric(id)
+  if (!is.double(id))
+    id <- as.double(id)
   if (!is.matrix(data))
     data <- as.matrix(data)
   m <- ncol(data)

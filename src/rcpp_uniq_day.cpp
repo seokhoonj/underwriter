@@ -29,7 +29,7 @@ NumericVector rcpp_uniq_day(StringMatrix id, NumericVector from, NumericVector t
 
   // calculate the length between from to end
   int nrows = rows.size();
-  std::vector<int> lens(0);
+  std::vector<double> lens(0);
   for (int k = 0; k < nrows-1; k++) {
     // length of rows
     std::vector<int> days(0);
