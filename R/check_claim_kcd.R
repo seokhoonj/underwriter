@@ -9,10 +9,10 @@ check_claim_kcd <- function(code, target, cores) {
   if (missing(cores))
     cores <- detectCores()
   if (Sys.info()["sysname"] == "Linux") {
-    data <- rbindlist(list(mclapply(keyword, pull_claim_kcd, target = target, mc.cores = cores)))
+    data <- rbindlist(list(mclapply(code, pull_claim_kcd, target = target, mc.cores = cores)))
   } else {
     cl <- makeCluster(cores)
-    data <- rbindlist(list(parLapply(cluster, keyword, pull_claim_kcd, target = target)))
+    data <- rbindlist(list(parLapply(code, keyword, pull_claim_kcd, target = target)))
     stopCluster(cl)
   }
   return(data)
