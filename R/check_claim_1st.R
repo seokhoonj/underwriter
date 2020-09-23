@@ -12,5 +12,5 @@ check_claim_1st <- function(data, id) {
   m <- ncol(data)
   n <- nrow(data)
   matrix(vapply(1:m, function(x) rcpp_first_claim(data[, x], id),
-                FUN.VALUE = numeric(n)), ncol = m)
+                FUN.VALUE = double(n)), ncol = m)
 }
