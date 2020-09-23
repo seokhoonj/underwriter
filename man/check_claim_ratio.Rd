@@ -7,9 +7,9 @@
 check_claim_ratio(data, ratio)
 }
 \arguments{
-\item{data}{claim year matrix}
+\item{data}{is a claim year matrix}
 
-\item{ratio}{claim amount ratio vector}
+\item{ratio}{is a claim amount ratio vector}
 }
 \description{
 you can create the claim amount ratio matrix from the claim year matrix.

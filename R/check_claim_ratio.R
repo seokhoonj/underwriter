@@ -1,8 +1,8 @@
 #' Create claim amount ratio matrix by claim year
 #'
 #' you can create the claim amount ratio matrix from the claim year matrix.
-#' @param data claim year matrix
-#' @param ratio claim amount ratio vector
+#' @param data is a claim year matrix
+#' @param ratio is a claim amount ratio vector
 #' @keywords claim amount ratio
 check_claim_ratio <- function(data, ratio) {
   # check arguments

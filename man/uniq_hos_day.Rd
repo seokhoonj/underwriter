@@ -9,11 +9,11 @@ uniq_hos_day(data, var_id, var_from, var_to)
 \arguments{
 \item{data}{or data.table with hospitalization data like id, icd code, start date, end date.}
 
-\item{var_id}{grouping column string}
+\item{var_id}{grouping column variables}
 
-\item{var_from}{start date column string}
+\item{var_from}{start date column variable}
 
-\item{var_to}{end date column string}
+\item{var_to}{end date column variable}
 }
 \description{
 you can calculate the hospitalization days by several groups like id, icd code

@@ -3,9 +3,9 @@
 #' you can calculate the hospitalization days by several groups like id, icd code
 #' considering duplicated days.
 #' @param data or data.table with hospitalization data like id, icd code, start date, end date.
-#' @param var_id grouping column string
-#' @param var_from start date column string
-#' @param var_to end date column string
+#' @param var_id grouping column variables
+#' @param var_from start date column variable
+#' @param var_to end date column variable
 #' @keywords hospitalization
 uniq_hos_day <- function(data, var_id, var_from, var_to) {
 
