@@ -1,11 +1,11 @@
-#' Search description of kcd
+#' Get descriptions of kcd codes
 #'
-#' you can search kcd and find its description in the kcd book.
+#' you can get kcd and find its description in the kcd book.
 #' @param string A kcd code or regular expression
 #' @examples
-#' srch_kcd('J00')
-#' srch_kcd('^M51$')
-srch_kcd <- function (kcd, lang = "kr") {
+#' get_kcd('J00')
+#' get_kcd('^M51$')
+get_kcd <- function (kcd, lang = "kr") {
   if (missing(kcd))
     stop('Please insert kcd code string or regular expression.')
 
@@ -14,7 +14,7 @@ srch_kcd <- function (kcd, lang = "kr") {
       df <- kcd_book[grepl(kcd, kcd_book$code, ignore.case = TRUE), c("code", "kr")]
       nc <- max(nchar(df$code))
       rc <- max(nchar(df$kr))
-      iter <- nc + 3 + ceiling(rc * 1.6)
+      iter <- nc + nchar(" | ") + ceiling(rc * 1.6)
       line <- paste0(rep("=", times = iter), collapse = "")
       result <- paste0(paste0(stri_pad_right(df$code, width = nc),
                               " | ", df$kr), collapse = "\n")

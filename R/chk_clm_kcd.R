@@ -5,7 +5,7 @@
 #' @param target is a claim kcd code vector
 #' @param cores is a number of cores for parallel processing
 #' @keywords claim kcd code
-check_claim_kcd <- function(code, target, cores) {
+chk_clm_kcd <- function(code, target, cores) {
   if (missing(cores))
     cores <- detectCores()
   if (Sys.info()["sysname"] == "Linux") {

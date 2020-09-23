@@ -5,8 +5,8 @@
 #' @param code is a kcd code regular expression vector
 #' @param target is a claim kcd code vector
 #' @keywords claim amount rider
-check_claim_rider <- function(rider, code, target) {
-  data <- underwriter::check_claim(code, target)
+chk_clm_rdr <- function(rider, code, target) {
+  data <- chk_clm(code, target)
   m <- ncol(data)
   n <- nrow(data)
   z <- vapply(1:m,

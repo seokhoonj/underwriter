@@ -4,7 +4,7 @@
 #' @param data is a claim year matrix
 #' @param ratio is a claim amount ratio vector
 #' @keywords claim amount ratio
-check_claim_ratio <- function(data, ratio) {
+chk_clm_rat <- function(data, ratio) {
   # check arguments
   if (!is.matrix(data))
     data <- as.matrix(data)

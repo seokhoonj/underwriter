@@ -7,7 +7,7 @@
 #' @param var_from start date column variable
 #' @param var_to end date column variable
 #' @keywords hospitalization
-uniq_hos_day <- function(data, var_id, var_from, var_to) {
+unq_hos_day <- function(data, var_id, var_from, var_to) {
 
   # check arguments missing
   if (missing(data) | missing(var_id) | missing(var_from) | missing(var_to))

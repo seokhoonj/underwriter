@@ -4,7 +4,7 @@
 #' @param code is a kcd code regular expression vector
 #' @param target is a kcd code vector
 #' @keywords claim boolean matrix
-check_claim <- function(code, target) {
+chk_clm <- function(code, target) {
   vapply(code,
          function(x) as.double(grepl(x, target, perl = TRUE)),
          FUN.VALUE = double(length(target)), USE.NAMES = FALSE)
