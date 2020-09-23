@@ -12,5 +12,5 @@ check_claim_rider <- function(rider, code, target) {
   z <- vapply(1:m,
               function(x) as.character(ifelse(data[, x] == 1L, rider[x], NA)),
               FUN.VALUE = character(n))
-  apply(z, 1, underwriter::glue_code)
+  apply(z, 1, glue_code)
 }
