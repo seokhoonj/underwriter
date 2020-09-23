@@ -1,6 +1,6 @@
-#' Create claim rider matrix
+#' Create claim rider vector
 #'
-#' you can create the claim rider matrix (from the claim boolean matrix included in the function).
+#' you can create the claim rider vector (from the claim boolean matrix included in the function).
 #' @param rider is a rider vector
 #' @param code is a kcd code regular expression vector
 #' @param target is a claim kcd code vector

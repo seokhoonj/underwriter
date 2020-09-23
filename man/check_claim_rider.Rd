@@ -2,7 +2,7 @@
 % Please edit documentation in R/check_claim_rider.R
 \name{check_claim_rider}
 \alias{check_claim_rider}
-\title{Create claim rider matrix}
+\title{Create claim rider vector}
 \usage{
 check_claim_rider(rider, code, target)
 }
@@ -14,7 +14,7 @@ check_claim_rider(rider, code, target)
 \item{target}{is a claim kcd code vector}
 }
 \description{
-you can create the claim rider matrix (from the claim boolean matrix included in the function).
+you can create the claim rider vector (from the claim boolean matrix included in the function).
 }
 \keyword{amount}
 \keyword{claim}
