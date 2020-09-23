@@ -11,6 +11,6 @@ check_claim_1st <- function(data, id) {
     data <- as.matrix(data)
   m <- ncol(data)
   n <- nrow(data)
-  matrix(vapply(1:m, function(x) underwriter::rcpp_first_claim(data[, x], id),
+  matrix(vapply(1:m, function(x) rcpp_first_claim(data[, x], id),
                 FUN.VALUE = numeric(n)), ncol = m)
 }
