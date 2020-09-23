@@ -6,6 +6,6 @@
 #' @param m is a length of riders
 #' @keywords claim year
 check_claim_year <- function(date, origin, m) {
-  yr <- as.integer(date - as.Date(origin)) %/% 365 + 1
+  yr <- as.double(date - as.Date(origin)) %/% 365 + 1
   matrix(rep(yr, m), ncol = m)
 }
