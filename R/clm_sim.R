@@ -17,7 +17,7 @@ clm_sim <- function(info, data, origin) {
   # set data arguments
   id     <- data$id
   target <- data$kcd
-  edate  <- data$edate
+  cdate  <- data$edate
 
   # length
   m <- nrow(info)
@@ -34,7 +34,7 @@ clm_sim <- function(info, data, origin) {
   clm[, loc] <- clm_1st[, loc]
 
   # claim year
-  clm_yrs <- chk_clm_yrs(edate, origin = origin, m = m)
+  clm_yrs <- chk_clm_yrs(cdate, origin = origin, m = m)
 
   # clm ratio
   clm_rat <- chk_clm_rat(clm_yrs, rat)
