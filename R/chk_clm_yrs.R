@@ -6,6 +6,6 @@
 #' @param m is a length of riders
 #' @keywords claim year
 chk_clm_yrs <- function(cdate, origin, m) {
-  yrs <- as.double(cdate - as.Date(origin)) %/% 365
+  yrs <- as.double(cdate - as.Date(origin)) %/% 365 + 1L
   matrix(rep(yrs, m), ncol = m)
 }
