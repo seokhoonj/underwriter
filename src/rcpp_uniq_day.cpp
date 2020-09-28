@@ -4,7 +4,7 @@
 using namespace Rcpp;
 
 // [[Rcpp::export]]
-NumericVector rcpp_uniq_day(StringMatrix id, NumericVector from, NumericVector to) {
+NumericVector rcpp_unique_day(StringMatrix id, NumericVector from, NumericVector to) {
 
   // split points
   std::vector<int> rows(1, 0);

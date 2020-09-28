@@ -5,7 +5,7 @@ rcpp_first_claim <- function(claim, id) {
     .Call(`_underwriter_rcpp_first_claim`, claim, id)
 }
 
-rcpp_uniq_day <- function(id, from, to) {
-    .Call(`_underwriter_rcpp_uniq_day`, id, from, to)
+rcpp_unique_day <- function(id, from, to) {
+    .Call(`_underwriter_rcpp_unique_day`, id, from, to)
 }
 

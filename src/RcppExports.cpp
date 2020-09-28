@@ -17,23 +17,23 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// rcpp_uniq_day
-NumericVector rcpp_uniq_day(StringMatrix id, NumericVector from, NumericVector to);
-RcppExport SEXP _underwriter_rcpp_uniq_day(SEXP idSEXP, SEXP fromSEXP, SEXP toSEXP) {
+// rcpp_unique_day
+NumericVector rcpp_unique_day(StringMatrix id, NumericVector from, NumericVector to);
+RcppExport SEXP _underwriter_rcpp_unique_day(SEXP idSEXP, SEXP fromSEXP, SEXP toSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< StringMatrix >::type id(idSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type from(fromSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type to(toSEXP);
-    rcpp_result_gen = Rcpp::wrap(rcpp_uniq_day(id, from, to));
+    rcpp_result_gen = Rcpp::wrap(rcpp_unique_day(id, from, to));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
     {"_underwriter_rcpp_first_claim", (DL_FUNC) &_underwriter_rcpp_first_claim, 2},
-    {"_underwriter_rcpp_uniq_day", (DL_FUNC) &_underwriter_rcpp_uniq_day, 3},
+    {"_underwriter_rcpp_unique_day", (DL_FUNC) &_underwriter_rcpp_unique_day, 3},
     {NULL, NULL, 0}
 };
 
