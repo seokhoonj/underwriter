@@ -2,8 +2,11 @@
 
 # exportPattern("^[[:alpha:]]+")
 
-export(unq_hos_day)
+export(sizeof)
+export(unilen)
+export(getcol)
 export(get_kcd)
+export(unq_hos_day)
 export(glue_code)
 export(splt_code)
 export(excl_code)
