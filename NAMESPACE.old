@@ -4,6 +4,11 @@
 
 export(unq_hos_day)
 export(get_kcd)
+export(glue_code)
+export(splt_code)
+export(excl_code)
+export(pull_code)
+export(pull_clm_kcd)
 export(chk_clm)
 export(chk_clm_1st)
 export(chk_clm_yrs)
