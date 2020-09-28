@@ -1,8 +1,8 @@
 
 # base functions ----------------------------------------------------------
 
-sizeof = function(x) format(object.size(x), unit = 'Mb')
 unilen = function(x) length(unique(x))
+getsiz = function(x) format(object.size(x), unit = 'Mb')
 getcol = function(df, str, contain = TRUE) if (contain) names(df)[ grepl(str, names(df))] else names(df)[!grepl(str, names(df))]
 
 # kcd code functions ------------------------------------------------------
