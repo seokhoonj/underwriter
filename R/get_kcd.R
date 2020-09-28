@@ -23,7 +23,7 @@ get_kcd <- function (kcd, lang = "kr") {
       df <- kcd_book[grepl(kcd, kcd_book$code, ignore.case = TRUE), c("code", "us")]
       nc <- max(nchar(df$code))
       rc <- max(nchar(df$us))
-      iter <- nc + 3 + rc
+      iter <- nc + nchar(" | ") + rc
       line <- paste0(rep("=", times = iter), collapse = "")
       result <- paste0(paste0(stri_pad_right(df$code, width = nc),
                               " | ", df$us), collapse = "\n")
