@@ -4,17 +4,18 @@
 \alias{clm_sim_sur_grd}
 \title{Create surgery grade simulation matrix}
 \usage{
-clm_sim_sur_grd(info, clm_sim, target)
+clm_sim_sur_grd(info, data, target)
 }
 \arguments{
 \item{info}{is a claim book with surgery grade rider information.}
 
-\item{target}{is a surgery grade vector}
-
 \item{data}{is a surgery simulation matrix (through the clm_sim function)}
+
+\item{target}{is a surgery grade vector}
 }
 \description{
 you can create the surgery grade simulation matrix from surgery simulation matrix
 }
 \keyword{grade}
+\keyword{simulation}
 \keyword{surgery}

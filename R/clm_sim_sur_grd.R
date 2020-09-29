@@ -4,8 +4,8 @@
 #' @param info is a claim book with surgery grade rider information.
 #' @param data is a surgery simulation matrix (through the clm_sim function)
 #' @param target is a surgery grade vector
-#' @keywords surgery grade
-clm_sim_sur_grd <- function(info, clm_sim, target) {
+#' @keywords surgery grade simulation
+clm_sim_sur_grd <- function(info, data, target) {
   col <- target
   row <- seq_along(target)
   rng <- unname(table(info$rider))
@@ -20,3 +20,5 @@ clm_sim_sur_grd <- function(info, clm_sim, target) {
   }
   matrix(unlist(z), ncol = length(rng))
 }
+
+
