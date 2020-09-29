@@ -33,6 +33,6 @@ get_kcd <- function (kcd, lang = "kr") {
     cat(line,   "\n")
     invisible(df)
   } else {
-    cat("No kcd code is found in the kcd book.")
+    cat("No kcd code is found in the kcd book.\n")
   }
 }
