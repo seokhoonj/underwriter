@@ -20,11 +20,11 @@ unq_hos_day <- function(data, var_id, var_from, var_to) {
 
   # check arguments type
   if (class(data[[var_from]]) != 'Date') stop("Please check the 'var_from' column's data type.")
-  if (class(data[[var_to]])   != 'Date') stop("Please check the 'var_to' column's data type.")
+  if (class(data[[var_to]]) != 'Date') stop("Please check the 'var_to' column's data type.")
 
   # check arguments' missing data
   if (any(is.na(data[[var_from]]))) stop("Please check the 'missing data' in 'var_from' column.")
-  if (any(is.na(data[[var_to]]  ))) stop("Please check the 'missing data' in 'var_to' column.")
+  if (any(is.na(data[[var_to]]))) stop("Please check the 'missing data' in 'var_to' column.")
 
   # transfrom to data.table
   data <- as.data.table(data)
