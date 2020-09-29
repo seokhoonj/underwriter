@@ -30,8 +30,7 @@ clm_sim <- function(info, data, origin) {
   clm_1st <- chk_clm_1st(clm, id)
 
   # combine claim and 1st claim
-  loc <- which(otime == 1)
-  clm[, loc] <- clm_1st[, loc]
+  clm <- cmb_clm_1st(clm, clm_1st, otime)
 
   # claim year
   clm_yrs <- chk_clm_yrs(cdate, origin = origin, m = m)
