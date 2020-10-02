@@ -1,9 +1,10 @@
 
 # base functions ----------------------------------------------------------
 
-unilen = function(x) length(unique(x))
-getsiz = function(x) format(object.size(x), unit = 'Mb')
-getcol = function(df, str, contain = TRUE) if (contain) names(df)[ grepl(str, names(df))] else names(df)[!grepl(str, names(df))]
+unlock <- function(obj, key) unserialize(aes_cbc_decrypt(obj, key = sha256(charToRaw(key))))
+unilen <- function(x) length(unique(x))
+getsiz <- function(x) format(object.size(x), unit = 'Mb')
+getcol <- function(data, str, contain = TRUE) if (contain) names(data)[ grepl(str, names(data))] else names(data)[!grepl(str, names(data))]
 
 # kcd code functions ------------------------------------------------------
 
