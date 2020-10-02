@@ -1,6 +1,7 @@
 
 # base functions ----------------------------------------------------------
 
+dolock <- function(obj, key) aes_cbc_encrypt(serialize(obj, NULL), key = sha256(charToRaw(key)))
 unlock <- function(obj, key) unserialize(aes_cbc_decrypt(obj, key = sha256(charToRaw(key))))
 unilen <- function(x) length(unique(x))
 getsiz <- function(x) format(object.size(x), unit = 'Mb')

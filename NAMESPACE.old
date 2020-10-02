@@ -2,6 +2,7 @@
 
 # exportPattern("^[[:alpha:]]+")
 
+export(dolock)
 export(unlock)
 export(unilen)
 export(getsiz)
