@@ -13,12 +13,10 @@ clm_sim_sur_grd <- function(info, data, target) {
 
   z = list()
   for (j in seq_along(rng)) {
-    datum <- data[, (loc[j]+1):(loc[j+1])]
+    dat <- data[, (loc[j]+1):(loc[j+1])]
     vec <- vector(length = length(target))
-    for (i in row) vec[i] <- datum[row[i], col[i]]
+    for (i in row) vec[i] <- dat[row[i], col[i]]
     z[[j]] <- vec
   }
   matrix(unlist(z), ncol = length(rng))
 }
-
-
