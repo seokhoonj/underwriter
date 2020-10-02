@@ -8,7 +8,7 @@
 clm_sim_sur_grd <- function(info, data, target) {
   col <- target
   row <- seq_along(target)
-  rng <- unname(table(info$rider))
+  rng <- unname(table(info$rdr_cd))
   loc <- c(0, cumsum(rng))
 
   z = list()
