@@ -17,7 +17,7 @@ clm_sim <- function(info, data, origin) {
   # set data arguments
   id     <- data$id
   target <- data$kcd
-  cdate  <- data$edate
+  cdate  <- data$sdate
 
   # length
   m <- nrow(info)
