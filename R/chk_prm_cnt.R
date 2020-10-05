@@ -1,11 +1,11 @@
-#' Create number of premium payment data by id
+#' Create number of premium payment matrix by id
 #'
-#' you can create number of premium payment from virtual underwritng date
+#' you can create number of premium payment matrix
 #' @param info is a claim information file
 #' @param data is a claim history file
 #' @param origin is an origin date
 #' @param mon is a payment duration
-#' @keywords number of premium payment
+#' @keywords number of premium payment matrix
 chk_prm_cnt <- function(info, data, origin, mon) {
   # set info variables
   rdr <- info$rdr_kr
@@ -32,6 +32,7 @@ chk_prm_cnt <- function(info, data, origin, mon) {
   rownames(clm_mon) <- id
   tmp <- as.data.table(clm_mon, keep.rownames = 'id')[, lapply(.SD, max), by = .(id)]
   names(tmp)[-1] <- rdr
+  id <- tmp$id
 
   # set column variables
   col_ot <- c('id', names(tmp[,-1])[which(otime == 1)])
@@ -46,7 +47,8 @@ chk_prm_cnt <- function(info, data, origin, mon) {
   mat_re[] <- mon
 
   # combine
-  df <- data.table(id = tmp$id, mat_ot, mat_re)
-  cl <- c('id', unique(rdr))
-  df[, ..cl]
+  z <- cbind(mat_ot, mat_re)
+  rownames(z) <- id
+  col <- unique(rdr)
+  z[, col]
 }

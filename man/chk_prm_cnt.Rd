@@ -2,7 +2,7 @@
 % Please edit documentation in R/chk_prm_cnt.R
 \name{chk_prm_cnt}
 \alias{chk_prm_cnt}
-\title{Create number of premium payment data by id}
+\title{Create number of premium payment matrix by id}
 \usage{
 chk_prm_cnt(info, data, origin, mon)
 }
@@ -16,8 +16,9 @@ chk_prm_cnt(info, data, origin, mon)
 \item{mon}{is a payment duration}
 }
 \description{
-you can create number of premium payment from virtual underwritng date
+you can create number of premium payment matrix
 }
+\keyword{matrix}
 \keyword{number}
 \keyword{of}
 \keyword{payment}
