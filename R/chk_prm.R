@@ -8,19 +8,19 @@
 #' @param grd is an grade
 #' @param yrs is a duration of observation
 #' @keywords premium matrix
-chk_prm <- function(info, rider, age, gnd, grd, yrs) {
+chk_prm <- function(info, rider, old, gnd, grd, yrs) {
   # set variables
-  age <- age + seq(0, yrs-1)
+  old <- old + seq(0, yrs-1)
   gnd <- if (gnd) 'male' else 'female'
   grd <- c(0, grd)
 
   # set rsk book as tmp
-  tmp <- info[rdr_kr %in% rider & old %in% age & grade %in% grd]
+  tmp <- info[rdr_kr %in% rider & age %in% old & grade %in% grd]
 
   # set rsk, amt, rat
-  rsk <- split(tmp[[gnd]], tmp$old)
-  amt <- split(tmp$amt, tmp$old)
-  rat <- split(tmp$rat, tmp$old)
+  rsk <- split(tmp[[gnd]], tmp$age)
+  amt <- split(tmp$amt, tmp$age)
+  rat <- split(tmp$rat, tmp$age)
 
   # set ratio as 1 from 2nd year
   for (i in 1:(yrs-1)) {
