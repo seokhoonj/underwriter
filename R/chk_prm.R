@@ -3,7 +3,7 @@
 #' you can create premium matrix by gender, age, grade
 #' @param info is a risk information file
 #' @param rider is a rider set
-#' @param age is an age
+#' @param old is an age
 #' @param gnd is an gender
 #' @param grd is an grade
 #' @param yrs is a duration of observation

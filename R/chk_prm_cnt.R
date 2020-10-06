@@ -4,9 +4,9 @@
 #' @param info is a claim information file
 #' @param data is a claim history file
 #' @param origin is an origin date
-#' @param mon is a payment duration
+#' @param yrs is a payment duration
 #' @keywords number of premium payment matrix
-chk_prm_cnt <- function(info, data, origin, mon) {
+chk_prm_cnt <- function(info, data, origin, yrs) {
   # set info variables
   rdr <- info$rdr_kr
   code <- info$kcd
@@ -40,11 +40,11 @@ chk_prm_cnt <- function(info, data, origin, mon) {
 
   # transform onetime matrix
   mat_ot <- as.matrix(tmp[, ..col_ot][,-1])
-  mat_ot[mat_ot == 0] <- mon
+  mat_ot[mat_ot == 0] <- yrs * 12
 
   # transform repeat matrix
   mat_re <- as.matrix(tmp[, ..col_re][,-1])
-  mat_re[] <- mon
+  mat_re[] <- yrs * 12
 
   # combine
   z <- cbind(mat_ot, mat_re)

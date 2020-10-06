@@ -4,7 +4,7 @@
 \alias{chk_prm_cnt}
 \title{Create number of premium payment matrix by id}
 \usage{
-chk_prm_cnt(info, data, origin, mon)
+chk_prm_cnt(info, data, origin, yrs)
 }
 \arguments{
 \item{info}{is a claim information file}
@@ -13,7 +13,7 @@ chk_prm_cnt(info, data, origin, mon)
 
 \item{origin}{is an origin date}
 
-\item{mon}{is a payment duration}
+\item{yrs}{is a payment duration}
 }
 \description{
 you can create number of premium payment matrix
