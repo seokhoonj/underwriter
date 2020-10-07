@@ -9,7 +9,7 @@
 #' @keywords premium payment simulation
 prm_sim <- function(rsk_info, clm_info, data, origin, yrs) {
   rdr <- unique(clm_info$rdr_kr) # rider
-  prf <- unique(data[, .(id, age, gnd)]) # profile
+  prf <- unique(data[, .(id, age, gnd, grd)]) # profile
   pop <- prf[, .(.N), .(age, gnd, grd)][order(age, gnd, grd)] # population
   npm <- cbind(prf, chk_prm_cnt(clm_info, data, origin, yrs)) # number of payment
 
