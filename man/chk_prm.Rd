@@ -4,12 +4,12 @@
 \alias{chk_prm}
 \title{Create premium matrix by gender, age, grade}
 \usage{
-chk_prm(info, rider, old, gnd, grd, yrs)
+chk_prm(rsk_info, clm_info, old, gnd, grd, yrs)
 }
 \arguments{
-\item{info}{is a risk information file}
+\item{rsk_info}{is a risk information file}
 
-\item{rider}{is a rider set}
+\item{clm_info}{is a claim information file}
 
 \item{old}{is an age}
 
