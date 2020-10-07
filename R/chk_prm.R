@@ -13,7 +13,7 @@ chk_prm <- function(rsk_info, clm_info, old, gnd, grd, yrs) {
   # join infos
   clm_info <- unique(clm_info[, .(cate, method, rdr_cd, rdr_us, rdr_kr, weight, amt, ratio, otime)])
   info <- rsk_info[clm_info, on = .(rdr_kr)]
-  rdr <- unique(clm_info$rdr_kr)
+  nrdr <- length(clm_info$rdr_kr)
 
   # set vars
   old <- old + seq(0, yrs - 1)
@@ -30,7 +30,7 @@ chk_prm <- function(rsk_info, clm_info, old, gnd, grd, yrs) {
 
   # set ratio as 1 from 2nd year
   for (i in 1:(yrs - 1)) {
-    rat[-1][[i]] <- rep(1, length(rider))
+    rat[-1][[i]] <- rep(1, nrdr)
   }
 
   # prm
