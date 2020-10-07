@@ -19,7 +19,7 @@ prm_sim <- function(rsk_info, clm_info, data, origin, yrs) {
     gnd_var <- pop$gnd[j]
     grd_var <- pop$grd[j]
     prm <- chk_prm(rsk_info, clm_info, age_var, gnd_var, grd_var, yrs)
-    tmp <- npm[age == age_var & gnd == gnd_var]
+    tmp <- npm[age == age_var & gnd == gnd_var & grd == grd_var]
     id <- tmp$id
     col <- getcol(tmp, 'id|age|gnd|grd', contain = FALSE)
     tmp <- as.matrix(tmp[, ..col])
