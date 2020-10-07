@@ -21,7 +21,7 @@ prm_sim <- function(rsk_info, clm_info, data, origin, yrs) {
     prm <- chk_prm(rsk_info, clm_info, age_var, gnd_var, grd_var, yrs)
     tmp <- npm[age == age_var & gnd == gnd_var]
     id <- tmp$id
-    col <- getcol(tmp, c('id', 'age', 'gnd', 'grd'), contain = FALSE)
+    col <- getcol(tmp, 'id|age|gnd|grd', contain = FALSE)
     tmp <- as.matrix(tmp[, ..col])
     tmp_vec <- as.list(vector(length = nrow(tmp)))
     for (i in 1:nrow(tmp)) {
