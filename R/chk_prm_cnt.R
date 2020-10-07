@@ -25,14 +25,17 @@ chk_prm_cnt <- function(info, data, origin, yrs) {
   clm <- chk_clm(code, target)
   clm_1st <- chk_clm_1st(clm, id)
   clm_cmb <- cmb_clm_1st(clm, clm_1st, otime)
+  rm(clm, clm_1st); gc()
   clm_mon <- chk_clm_mon(cdate, origin, m)
 
   # clm_mon
   clm_mon[clm_cmb == 0] <- 0L
+  rm(clm_cmb); gc()
   rownames(clm_mon) <- id
   tmp <- as.data.table(clm_mon, keep.rownames = 'id')[, lapply(.SD, max), by = .(id)]
   names(tmp)[-1] <- rdr
   id <- tmp$id
+  rm(clm_mon); gc()
 
   # set column variables
   col_ot <- c('id', names(tmp[,-1])[which(otime == 1)])
