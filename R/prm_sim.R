@@ -21,8 +21,8 @@ prm_sim <- function(rsk_info, clm_info, data, origin, yrs) {
     prm <- chk_prm(rsk_info, clm_info, age_var, gnd_var, grd_var, yrs)
     tmp <- npm[age == age_var & gnd == gnd_var]
     id <- tmp$id
-    tmp <- as.matrix(tmp[, -c(1:3)])
-
+    col <- getcol(tmp, c('id', 'age', 'gnd', 'grd'), contain = FALSE)
+    tmp <- as.matrix(tmp[, ..col])
     tmp_vec <- as.list(vector(length = nrow(tmp)))
     for (i in 1:nrow(tmp)) {
       tmp_vec[[i]] <- vapply(seq_along(tmp[i,]), function(x) sum(prm[1:tmp[i, x], x]),
