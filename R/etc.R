@@ -31,6 +31,6 @@ k_fold <- function(data, k) {
   l <- rep(1:k, times = t)
   s <- sample(n, size = n)
   z <- split(s, l)
-  names(z) <- paste0('fold.', names(z))
+  names(z) <- paste0('fold.', str_pad(names(z), width = 2, pad = '0'))
   z
 }
