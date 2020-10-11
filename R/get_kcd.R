@@ -16,7 +16,7 @@ get_kcd <- function (kcd, lang = "kr") {
       rc <- max(nchar(df$kr))
       iter <- nc + nchar(" | ") + ceiling(rc * 1.6)
       line <- paste0(rep("=", times = iter), collapse = "")
-      result <- paste0(paste0(stri_pad_right(df$code, width = nc),
+      result <- paste0(paste0(str_pad(df$code, width = nc, pad = " "),
                               " | ", df$kr), collapse = "\n")
     }
     else {
@@ -25,7 +25,7 @@ get_kcd <- function (kcd, lang = "kr") {
       rc <- max(nchar(df$us))
       iter <- nc + nchar(" | ") + rc
       line <- paste0(rep("=", times = iter), collapse = "")
-      result <- paste0(paste0(stri_pad_right(df$code, width = nc),
+      result <- paste0(paste0(str_pad(df$code, width = nc, pad = " "),
                               " | ", df$us), collapse = "\n")
     }
     cat(line,   "\n")
