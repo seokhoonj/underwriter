@@ -19,3 +19,18 @@ pull_clm_kcd <- function(code, target) unlist(lapply(regmatches(target, gregexpr
 # date functions ----------------------------------------------------------
 
 diff_mon <- function(date, origin) (year(date) - year(as.Date(origin))) * 12 + month(date) - month(as.Date(origin)) + 1L
+
+
+# model functions ---------------------------------------------------------
+
+k_fold <- function(data, k) {
+  n <- nrow(data)
+  r <- round(n / k)
+  l <- n - (r * (k-1))
+  t <- c(rep(r, k-1), l)
+  l <- rep(1:k, times = t)
+  s <- sample(n, size = n)
+  z <- split(s, l)
+  names(z) <- paste0('fold.', names(z))
+  z
+}
