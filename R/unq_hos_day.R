@@ -31,7 +31,9 @@ unq_hos_day <- function(data, var_id, var_from, var_to) {
   setorderv(data, c(var_id, var_from, var_to))
 
   # set arguments
-  id   <- as.matrix(data[, ..var_id])
+  id   <- data[, ..var_id]
+  id[] <- lapply(id, as.character)
+  id   <- as.matrix(id)
   from <- data[[var_from]]
   to   <- data[[var_to]]
   if (any(to - from < 0)) stop("Some 'var_from' data are greater than 'var_to' data.")
