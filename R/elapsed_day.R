@@ -9,7 +9,8 @@
 #' @keywords elapsed days
 elapsed_day <- function(..., var_id, var_to, origin) {
   l <- list(...)
-  var_id <- vapply(substitute(var_id)[-1L], deparse, FUN.VALUE = "character")
+  var_id <- vapply(substitute(var_id), deparse, FUN.VALUE = "character")
+  var_id <- names(l[[1L]])[match(var_id, names(l[[1L]]), 0L)]
   var_to <- deparse(substitute(var_to))
   v <- as.list(vector(length = length(l)))
   for (i in seq_along(l)) {

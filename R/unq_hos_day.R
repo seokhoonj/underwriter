@@ -14,7 +14,8 @@ unq_hos_day <- function(data, var_id, var_from, var_to) {
     stop('Please check input variables.')
 
   # transfrom to strings
-  var_id   <- vapply(substitute(var_id)[-1L], deparse, FUN.VALUE = 'character')
+  var_id   <- vapply(substitute(var_id), deparse, FUN.VALUE = 'character')
+  var_id   <- names(data)[match(var_id, names(data), 0L)]
   var_from <- deparse(substitute(var_from))
   var_to   <- deparse(substitute(var_to))
 
