@@ -17,5 +17,6 @@ elapsed_day <- function(..., var_id, var_to, origin) {
     v[[i]] <- l[[i]][, .(elapsed = vapply(.SD, function(x) as.numeric(as.Date(origin) - max(x)), FUN.VALUE = 1)), var_id, .SDcols = var_to]
   }
   z <- do.call('rbind', v)
-  z[order(id, kcd), .(elapsed = vapply(.SD, min, FUN.VALUE = 1)), var_id, .SDcols = 'elapsed']
+  setorderv(z, var_id)
+  z[, .(elapsed = vapply(.SD, min, FUN.VALUE = 1)), var_id, .SDcols = 'elapsed']
 }
