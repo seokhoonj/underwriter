@@ -16,7 +16,7 @@ get_kcd <- function (kcd, lang = "kr") {
       rc <- max(nchar(df$kr))
       iter <- nc + nchar(" | ") + ceiling(rc * 1.6)
       line <- paste0(rep("=", times = iter), collapse = "")
-      result <- paste0(paste0(str_pad(df$code, width = nc, pad = " "),
+      result <- paste0(paste0(str_pad(df$code, width = nc, pad = " ", side = "right"),
                               " | ", df$kr), collapse = "\n")
     }
     else {
@@ -25,14 +25,61 @@ get_kcd <- function (kcd, lang = "kr") {
       rc <- max(nchar(df$us))
       iter <- nc + nchar(" | ") + rc
       line <- paste0(rep("=", times = iter), collapse = "")
-      result <- paste0(paste0(str_pad(df$code, width = nc, pad = " "),
+      result <- paste0(paste0(str_pad(df$code, width = nc, pad = " ", side = "right"),
                               " | ", df$us), collapse = "\n")
     }
     cat(line,   "\n")
     cat(result, "\n")
     cat(line,   "\n")
     invisible(df[[lang]])
-  } else {
+  } else if (any(grepl(kcd, kcd_book$kr))) {
+    if (lang == "kr") {
+      df <- kcd_book[grepl(kcd, kcd_book$kr, ignore.case = TRUE), c("code", "kr")]
+      nc <- max(nchar(df$code))
+      rc <- max(nchar(df$kr))
+      iter <- nc + nchar(" | ") + ceiling(rc * 1.6)
+      line <- paste0(rep("=", times = iter), collapse = "")
+      result <- paste0(paste0(str_pad(df$code, width = nc, pad = " ", side = "right"),
+                              " | ", df$kr), collapse = "\n")
+    }
+    else {
+      df <- kcd_book[grepl(kcd, kcd_book$kr, ignore.case = TRUE), c("code", "us")]
+      nc <- max(nchar(df$code))
+      rc <- max(nchar(df$us))
+      iter <- nc + nchar(" | ") + rc
+      line <- paste0(rep("=", times = iter), collapse = "")
+      result <- paste0(paste0(str_pad(df$code, width = nc, pad = " ", side = "right"),
+                              " | ", df$us), collapse = "\n")
+    }
+    cat(line,   "\n")
+    cat(result, "\n")
+    cat(line,   "\n")
+    invisible(df[[lang]])
+  } else if(any(grepl(kcd, kcd_book$us))) {
+    if (lang == "kr") {
+      df <- kcd_book[grepl(kcd, kcd_book$us, ignore.case = TRUE), c("code", "kr")]
+      nc <- max(nchar(df$code))
+      rc <- max(nchar(df$kr))
+      iter <- nc + nchar(" | ") + ceiling(rc * 1.6)
+      line <- paste0(rep("=", times = iter), collapse = "")
+      result <- paste0(paste0(str_pad(df$code, width = nc, pad = " ", side = "right"),
+                              " | ", df$kr), collapse = "\n")
+    }
+    else {
+      df <- kcd_book[grepl(kcd, kcd_book$us, ignore.case = TRUE), c("code", "us")]
+      nc <- max(nchar(df$code))
+      rc <- max(nchar(df$us))
+      iter <- nc + nchar(" | ") + rc
+      line <- paste0(rep("=", times = iter), collapse = "")
+      result <- paste0(paste0(str_pad(df$code, width = nc, pad = " ", side = "right"),
+                              " | ", df$us), collapse = "\n")
+    }
+    cat(line,   "\n")
+    cat(result, "\n")
+    cat(line,   "\n")
+    invisible(df[[lang]])
+  }
+  else {
     # cat("No kcd code is found in the kcd book.\n")
   }
 }
