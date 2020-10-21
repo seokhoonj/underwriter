@@ -4,14 +4,14 @@
 \alias{elapsed_day}
 \title{Calculate elapsed days}
 \usage{
-elapsed_day(..., var_id, var_to, origin)
+elapsed_day(data, var_id, var_to, origin)
 }
 \arguments{
-\item{...}{claim data with id, icd code, start date, end date.}
+\item{data}{is claim data with id, icd code, start date, end date.}
 
-\item{var_id}{grouping column variables}
+\item{var_id}{is the grouping column variables}
 
-\item{var_to}{end date column variable}
+\item{var_to}{is the end date column variable}
 
 \item{origin}{is an origin date}
 }
