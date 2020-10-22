@@ -8,6 +8,7 @@
 #' @keywords number of premium payment matrix
 chk_prm_cnt <- function(info, data, origin, yrs) {
   # set info variables
+  info <- unique(info[, .(rdr_kr, kcd, otime)])
   rdr <- info$rdr_kr
   code <- info$kcd
   otime <- info$otime
@@ -52,7 +53,5 @@ chk_prm_cnt <- function(info, data, origin, yrs) {
   # combine
   z <- cbind(mat_ot, mat_re)
   rownames(z) <- id
-  # col <- unique(rdr)
-  # z[, col]
   z
 }
