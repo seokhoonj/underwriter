@@ -2,6 +2,7 @@
 
 # exportPattern("^[[:alpha:]]+")
 
+export(join)
 export(dolock)
 export(unlock)
 export(unilen)

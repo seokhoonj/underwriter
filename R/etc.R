@@ -6,6 +6,10 @@ unlock <- function(obj, key) unserialize(aes_cbc_decrypt(obj, key = sha256(charT
 unilen <- function(x) length(unique(x))
 getsiz <- function(x) format(object.size(x), unit = 'Mb')
 getcol <- function(data, str, contain = TRUE) if (contain) names(data)[ grepl(str, names(data))] else names(data)[!grepl(str, names(data))]
+join <- function(..., by, all = FALSE, all.x = all, all.y = all, sort = TRUE) {
+  l <- list(...)
+  Reduce(function(...) merge(..., by = by, all = all, all.x = all.x, all.y = all.y, sort = sort), l)
+}
 
 # kcd code functions ------------------------------------------------------
 
