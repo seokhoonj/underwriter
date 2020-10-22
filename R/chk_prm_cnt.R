@@ -52,6 +52,7 @@ chk_prm_cnt <- function(info, data, origin, yrs) {
   # combine
   z <- cbind(mat_ot, mat_re)
   rownames(z) <- id
-  col <- unique(rdr)
-  z[, col]
+  # col <- unique(rdr)
+  # z[, col]
+  z
 }
