@@ -2,13 +2,13 @@
 #'
 #' you can calculate the basic kcd code statistics
 #' @param data is claim data with id, kcd code
-#' @param var_id is the id variable for the unique count
-#' @param var_kcd is the kcd code column variable
-#' @param var_clm is the claim amount column variable
-#' @param var_prm is the risk premium amount column variable
 #' @param code is a specific kcd code
+#' @param var_id is an id variable for the unique count
+#' @param var_kcd is a kcd code column variable
+#' @param var_clm is a claim amount column variable
+#' @param var_prm is a risk premium amount column variable
 #' @keywords kcd statistics
-stat_kcd <- function(data, var_id, var_kcd, var_clm, var_prm, code) {
+stat_kcd <- function(data, code, var_id, var_kcd, var_clm, var_prm) {
 
   # variables
   var_kcd  <- deparse(substitute(var_kcd))

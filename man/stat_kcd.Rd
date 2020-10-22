@@ -4,20 +4,20 @@
 \alias{stat_kcd}
 \title{Calculate the basic kcd code statistics from the data including specific kcd code}
 \usage{
-stat_kcd(data, var_id, var_kcd, var_clm, var_prm, code)
+stat_kcd(data, code, var_id, var_kcd, var_clm, var_prm)
 }
 \arguments{
 \item{data}{is claim data with id, kcd code}
 
-\item{var_id}{is the id variable for the unique count}
-
-\item{var_kcd}{is the kcd code column variable}
-
-\item{var_clm}{is the claim amount column variable}
-
-\item{var_prm}{is the risk premium amount column variable}
-
 \item{code}{is a specific kcd code}
+
+\item{var_id}{is an id variable for the unique count}
+
+\item{var_kcd}{is a kcd code column variable}
+
+\item{var_clm}{is a claim amount column variable}
+
+\item{var_prm}{is a risk premium amount column variable}
 }
 \description{
 you can calculate the basic kcd code statistics
