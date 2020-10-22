@@ -14,7 +14,7 @@ chk_prm_cnt <- function(info, data, origin, yrs) {
 
   # set data variables
   id <- data$id
-  cdate <- data$sdate
+  cdate <- data$edate
   target <- data$kcd
 
   # m, n
