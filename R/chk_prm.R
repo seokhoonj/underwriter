@@ -35,5 +35,9 @@ chk_prm <- function(rsk_info, clm_info, old, gnd, grd, yrs) {
   # prm
   prm <- lapply(1:yrs, function(x) round(rsk[[x]] * rat[[x]] * amt[[x]] * 1e+06 / 12))
   z <- do.call("rbind", lapply(prm, function(x) matrix(rep(x, 12), nrow = 12, byrow = TRUE)))
-  return(z)
+  colnames(z) <- clm_info$rdr_kr
+
+  # duplicated column handling process
+  z <- dup_col_min(z)
+  z[, unique(clm_info$rdr_kr), drop = FALSE]
 }
