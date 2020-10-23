@@ -21,7 +21,7 @@ dup_col_min <- function(data) {
   tmp <- as.list(vector(length = length(dups)))
   for (i in seq_along(dups)) {
     loc[[i]] <- which(coln == dups[i])
-    tmp[[i]] <- apply(data[, loc[[i]]], 1, min)
+    tmp[[i]] <- apply(data[, loc[[i]], drop = FALSE], 1, min)
   }
   dat <- data[, -unlist(loc)]
   tmp <- do.call('cbind', tmp)
