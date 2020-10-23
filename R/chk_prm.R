@@ -8,7 +8,6 @@
 #' @param grd is an grade
 #' @param yrs is a duration of observation
 #' @keywords premium matrix
-
 chk_prm <- function(rsk_info, clm_info, old, gnd, grd, yrs) {
   # join infos
   clm_info <- unique(clm_info[, .(cate, method, rdr_cd, rdr_us, rdr_kr, weight, amt, ratio, otime)])
