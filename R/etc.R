@@ -11,6 +11,25 @@ join <- function(..., by, all = FALSE, all.x = all, all.y = all, sort = TRUE) {
   Reduce(function(...) merge(..., by = by, all = all, all.x = all.x, all.y = all.y, sort = sort), l)
 }
 
+# matrix functions --------------------------------------------------------
+
+dup_col_min <- function(data) {
+  coln <- colnames(data)
+  colt <- table(coln)
+  dups <- names(colt[colt > 1])
+  loc <- as.list(vector(length = length(dups)))
+  tmp <- as.list(vector(length = length(dups)))
+  for (i in seq_along(dups)) {
+    loc[[i]] <- which(coln == dups[i])
+    tmp[[i]] <- apply(data[, loc[[i]]], 1, min)
+  }
+  dat <- data[, -unlist(loc)]
+  tmp <- do.call('cbind', tmp)
+  colnames(tmp) <- dups
+  z <- cbind(dat, tmp)
+  z[, unique(coln)]
+}
+
 # kcd code functions ------------------------------------------------------
 
 glue_code <- function(code) paste0(code[!is.na(code)], collapse = '|')
