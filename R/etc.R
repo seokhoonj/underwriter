@@ -26,8 +26,7 @@ dup_col_min <- function(data) {
   dat <- data[, -unlist(loc), drop = FALSE]
   tmp <- do.call('cbind', tmp)
   colnames(tmp) <- dups
-  z <- cbind(dat, tmp)
-  z[, unique(coln)]
+  cbind(dat, tmp)
 }
 
 # kcd code functions ------------------------------------------------------
