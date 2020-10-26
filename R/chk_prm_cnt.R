@@ -35,22 +35,24 @@ chk_prm_cnt <- function(info, data, origin, yrs) {
   tmp <- as.data.table(clm_mon, keep.rownames = 'id')[, lapply(.SD, max), by = .(id)]
   names(tmp)[-1] <- rdr
   id <- tmp$id
+  tmp <- as.matrix(tmp[, -1])
   rm(clm_mon); gc()
 
   # set column variables
-  col_ot <- c('id', names(tmp[,-1])[which(otime == 1)])
-  col_re <- c('id', names(tmp[,-1])[which(otime == 0)])
+  col_ot <- which(otime == 1)
+  col_re <- which(otime == 0)
 
   # transform onetime matrix
-  mat_ot <- as.matrix(tmp[, ..col_ot][,-1])
+  mat_ot <- tmp[, col_ot]
   mat_ot[mat_ot == 0] <- yrs * 12
 
   # transform repeat matrix
-  mat_re <- as.matrix(tmp[, ..col_re][,-1])
+  mat_re <- tmp[, col_re]
   mat_re[] <- yrs * 12
 
   # combine
   z <- cbind(mat_ot, mat_re)
+  colnames(z) <- rdr
   rownames(z) <- id
 
   # shirinkage duplicated columns min
