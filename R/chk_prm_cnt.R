@@ -43,16 +43,17 @@ chk_prm_cnt <- function(info, data, origin, yrs) {
   col_re <- which(otime == 0)
 
   # transform onetime matrix
-  mat_ot <- tmp[, col_ot]
+  mat_ot <- tmp[, col_ot, drop = FALSE]
   mat_ot[mat_ot == 0] <- yrs * 12
 
   # transform repeat matrix
-  mat_re <- tmp[, col_re]
+  mat_re <- tmp[, col_re, drop = FALSE]
   mat_re[] <- yrs * 12
 
   # combine
   z <- cbind(mat_ot, mat_re)
-  colnames(z) <- rdr
+  z <- z[, rdr, drop = FALSE]
+  # colnames(z) <- rdr
   rownames(z) <- id
 
   # shirinkage duplicated columns min
