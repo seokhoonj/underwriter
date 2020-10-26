@@ -17,17 +17,20 @@ dup_col_min <- function(data) {
   coln <- colnames(data)
   colt <- table(coln)
   dups <- names(colt[colt > 1])
-  loc <- as.list(vector(length = length(dups)))
-  tmp <- as.list(vector(length = length(dups)))
-  for (i in seq_along(dups)) {
-    loc[[i]] <- which(coln == dups[i])
-    tmp[[i]] <- apply(data[, loc[[i]], drop = FALSE], 1, min)
+  if (length(dups) > 0) {
+    loc <- as.list(vector(length = length(dups)))
+    tmp <- as.list(vector(length = length(dups)))
+    for (i in seq_along(dups)) {
+      loc[[i]] <- which(coln == dups[i])
+      tmp[[i]] <- apply(data[, loc[[i]], drop = FALSE], 1, min)
+    }
+    dat <- data[, -unlist(loc), drop = FALSE]
+    tmp <- do.call('cbind', tmp)
+    colnames(tmp) <- dups
+    z <- cbind(dat, tmp)
+    data <- z[, unique(coln), drop = FALSE]
   }
-  dat <- data[, -unlist(loc), drop = FALSE]
-  tmp <- do.call('cbind', tmp)
-  colnames(tmp) <- dups
-  z <- cbind(dat, tmp)
-  z[, unique(coln), drop = FALSE]
+  return(data)
 }
 
 # kcd code functions ------------------------------------------------------
