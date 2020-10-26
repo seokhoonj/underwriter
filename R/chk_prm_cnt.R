@@ -52,7 +52,8 @@ chk_prm_cnt <- function(info, data, origin, yrs) {
   # combine
   z <- cbind(mat_ot, mat_re)
   rownames(z) <- id
-  dup_col_min(z)
-  # col <- unique(rdr)
-  # z[, col]
+
+  # shirinkage duplicated columns min
+  z <- dup_col_min(z)
+  z[, unique(rdr), drop = FALSE]
 }
