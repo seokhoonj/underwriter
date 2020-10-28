@@ -14,12 +14,12 @@ get_id_with_kcd <- function(data, var_id, var_kcd, code, only) {
 
   var_id <- deparse(substitute(var_id))
   var_kcd <- deparse(substitute(var_kcd))
-  ids <- unique(data[grepl(code, data[[var_kcd]])][[var_id]])
-  z <- data[data[[var_id]] %in% ids]
+  ids <- unique(`$`(data[grepl(code, `$`(data, var_kcd))], var_id))
+  z <- data[`$`(data, var_id) %in% ids]
 
   if (only) {
-    ids_excl <- unique(z[!grepl(code, z[[var_kcd]])]$id)
-    z <- z[!z[[var_id]] %in% ids_excl]
+    ids_excl <- unique(`$`(z[!grepl(code, `$`(z, var_kcd))], var_id))
+    z <- z[!`$`(z, var_id) %in% ids_excl]
   }
 
   return(z)
