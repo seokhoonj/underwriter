@@ -12,7 +12,7 @@ cst_unq_kcd <- function(data, var_id, target, prefix = "var", glue = TRUE) {
   var_id <- names(data)[match(var_id, names(data), 0L)]
   target <- deparse(substitute(target))
   z <- copy(data)
-  z[, rank := frank(.SD, ties.method = "first"), by = var_id, .SDcols = target]
+  z[, rank := rank(get(target), ties.method = "first"), by = var_id]
   fml <- formula(paste(paste(var_id, collapse = " + "), " ~ rank"))
   z <- dcast.data.table(z, formula = fml, value.var = target)
   var_cst <- paste0(prefix, str_pad(names(z)[-match(var_id, names(z), 0L)],
