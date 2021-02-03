@@ -7,7 +7,7 @@
 #' @param prefix is a prefix for new kcd columns
 #' @param glue is to glue all new kcd columns
 #' @keywords reshape kcd code column long-to-wide
-cst_unq_kcd <- function(data, var_id, target, prefix = "var", glue = TRUE) {
+cst_unq_kcd <- function(data, var_id, target, prefix = "kcd", glue = TRUE) {
   var_id <- vapply(substitute(var_id), deparse, FUN.VALUE = "character")
   var_id <- names(data)[match(var_id, names(data), 0L)]
   target <- deparse(substitute(target))
@@ -20,6 +20,9 @@ cst_unq_kcd <- function(data, var_id, target, prefix = "var", glue = TRUE) {
                                     pad = "0"))
   vars <- c(var_id, var_cst)
   setnames(z, vars)
-  if (glue) z <- data.table(z[, ..var_id], kcd = apply(z[, ..var_cst], 1, glue_code))
+  if (glue) {
+    z <- data.table(z[, ..var_id], kcd = apply(z[, ..var_cst], 1, glue_code))
+    setnames(z, c(var_id, prefix))
+  }
   return(z)
 }
