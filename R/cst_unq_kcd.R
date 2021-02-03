@@ -1,0 +1,24 @@
+#' Reshape kcd code column long-to-wide version by each var_id
+#'
+#' you can transfrom kcd code columns long-to-wide version by each var_id
+#' @param data is a claim data
+#' @param var_id is var_id
+#' @param target is a kcd column variable
+#' @param prefix is a prefix for new kcd columns
+#' @param glue is to glue all new kcd columns
+#' @keywords reshape kcd code column long-to-wide
+cst_unq_kcd <- function(data, var_id, target, prefix = "var", glue = TRUE) {
+  var_id <- varstr(data, var_id)
+  target <- deparse(substitute(target))
+  tmp <- copy(data)
+  tmp[, rank := frank(.SD, ties.method = "first"), by = var_id, .SDcols = target]
+  fml <- formula(paste(paste(var_id, collapse = " + "), " ~ rank"))
+  z <- dcast.data.table(tmp, formula = fml, value.var = target)
+  var_cst <- paste0(prefix, str_pad(names(z)[-match(var_id, names(z), 0L)],
+                                    width = nchar(length(names(z))-length(var_id)),
+                                    pad = "0"))
+  vars <- c(var_id, var_cst)
+  setnames(z, vars)
+  if (glue) z <- data.table(z[, ..var_id], kcd = apply(z[, ..var_cst], 1, glue_code))
+  return(z)
+}

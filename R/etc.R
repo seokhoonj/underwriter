@@ -6,10 +6,15 @@ unlock <- function(obj, key) unserialize(aes_cbc_decrypt(obj, key = sha256(charT
 unilen <- function(x) length(unique(x))
 getsiz <- function(x) format(object.size(x), unit = 'Mb')
 getcol <- function(data, str, contain = TRUE) if (contain) names(data)[ grepl(str, names(data))] else names(data)[!grepl(str, names(data))]
+varstr <- function(data, x) {
+  x <- vapply(substitute(x), deparse, FUN.VALUE = "character")
+  names(data)[match(x, names(data), 0L)]
+}
 join <- function(..., by, all = FALSE, all.x = all, all.y = all, sort = TRUE) {
   l <- list(...)
   Reduce(function(...) merge(..., by = by, all = all, all.x = all.x, all.y = all.y, sort = sort), l)
 }
+
 
 # matrix functions --------------------------------------------------------
 
@@ -32,6 +37,7 @@ dup_col_min <- function(data) {
   }
   return(data)
 }
+
 
 # kcd code functions ------------------------------------------------------
 
