@@ -8,12 +8,13 @@
 #' @param glue is to glue all new kcd columns
 #' @keywords reshape kcd code column long-to-wide
 cst_unq_kcd <- function(data, var_id, target, prefix = "var", glue = TRUE) {
-  var_id <- varstr(data, var_id)
+  var_id <- vapply(substitute(var_id), deparse, FUN.VALUE = "character")
+  var_id <- names(data)[match(var_id, names(data), 0L)]
   target <- deparse(substitute(target))
-  tmp <- copy(data)
-  tmp[, rank := frank(.SD, ties.method = "first"), by = var_id, .SDcols = target]
+  z <- copy(data)
+  z[, rank := frank(.SD, ties.method = "first"), by = var_id, .SDcols = target]
   fml <- formula(paste(paste(var_id, collapse = " + "), " ~ rank"))
-  z <- dcast.data.table(tmp, formula = fml, value.var = target)
+  z <- dcast.data.table(z, formula = fml, value.var = target)
   var_cst <- paste0(prefix, str_pad(names(z)[-match(var_id, names(z), 0L)],
                                     width = nchar(length(names(z))-length(var_id)),
                                     pad = "0"))
