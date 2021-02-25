@@ -13,15 +13,15 @@ cst_unq_kcd <- function(data, var_id, target, prefix = "kcd", glue = TRUE) {
   target <- deparse(substitute(target))
   z <- copy(data)
   z[, rank := rank(get(target), ties.method = "first"), by = var_id]
-  fml <- formula(paste(paste(var_id, collapse = " + "), " ~ rank"))
-  z <- dcast.data.table(z, formula = fml, value.var = target)
+  f <- formula(paste(paste(var_id, collapse = " + "), " ~ rank"))
+  z <- dcast.data.table(z, formula = f, value.var = target)
   var_cst <- paste0(prefix, str_pad(names(z)[-match(var_id, names(z), 0L)],
                                     width = nchar(length(names(z))-length(var_id)),
                                     pad = "0"))
   vars <- c(var_id, var_cst)
   setnames(z, vars)
   if (glue) {
-    z <- data.table(z[, ..var_id], kcd = apply(z[, ..var_cst], 1, glue_code))
+    z <- data.table(z[, ..var_id], kcd = apply(z[, ..var_cst], 1, function(x) glue_code(sort(unique(x)))))
     setnames(z, c(var_id, prefix))
   }
   return(z)
