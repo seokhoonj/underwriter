@@ -9,7 +9,8 @@ get_kcd <- function (kcd, lang = "kr") {
   if (missing(kcd))
     stop('Please insert kcd code string or regular expression.')
 
-  if (any(grepl(toupper(kcd), kcd_book$code))) {
+  if (any(grepl(toupper(kcd), kcd_book$code) |
+          grepl(toupper(kcd), gsub("\\.", "", kcd_book$code, ignore.case = TRUE)))) {
     if (lang == "kr") {
       df <- kcd_book[grepl(kcd, kcd_book$code, ignore.case = TRUE) |
                        grepl(kcd, gsub("\\.", "", kcd_book$code, ignore.case = TRUE)),
@@ -36,7 +37,8 @@ get_kcd <- function (kcd, lang = "kr") {
     cat(result, "\n")
     cat(line,   "\n")
     invisible(df[[lang]])
-  } else if (any(grepl(kcd, kcd_book$kr))) {
+  }
+  else if (any(grepl(kcd, kcd_book$kr))) {
     if (lang == "kr") {
       df <- kcd_book[grepl(kcd, kcd_book$kr, ignore.case = TRUE), c("code", "kr")]
       nc <- max(nchar(df$code))
@@ -59,7 +61,8 @@ get_kcd <- function (kcd, lang = "kr") {
     cat(result, "\n")
     cat(line,   "\n")
     invisible(df[[lang]])
-  } else if(any(grepl(kcd, kcd_book$us))) {
+  }
+  else if(any(grepl(kcd, kcd_book$us))) {
     if (lang == "kr") {
       df <- kcd_book[grepl(kcd, kcd_book$us, ignore.case = TRUE), c("code", "kr")]
       nc <- max(nchar(df$code))
