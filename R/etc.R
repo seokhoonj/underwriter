@@ -66,3 +66,15 @@ k_fold <- function(data, k) {
   names(z) <- paste0('fold.', str_pad(names(z), width = 2, pad = '0'))
   z
 }
+
+k_spl <- function(x, k) {
+  v <- unique(x)
+  n <- length(v)
+  s <- ceiling(n / k)
+  r <- n + s * (1-k)
+  q <- c(rep(1:(k-1), each = s), rep(k, times = r))
+  z <- split(v, q)
+  names(z) <- paste0("spl.", str_pad(names(z), width = 2,
+                                     pad = "0"))
+  return(z)
+}
