@@ -5,12 +5,12 @@
 #' @param id is a insured id numeric vector
 #' @keywords 1st claim
 chk_clm_1st <- function(data, id) {
-  if (!is.double(id))
+  if (is.character(id))
     id <- as.double(id)
-  if (!is.matrix(data))
+  if (!class(data) %in% c("matrix", "dgCMatrix"))
     data <- as.matrix(data)
-  m <- ncol(data)
+  # m <- ncol(data)
   n <- nrow(data)
-  Matrix(vapply(1:m, function(x) rcpp_first_claim(data[, x], id),
-                FUN.VALUE = double(n)), sparse = TRUE)
+  as(vapply(1:m, function(x) rcpp_first_claim(data[, x], id),
+            FUN.VALUE = double(n)), "CsparseMatrix")
 }
