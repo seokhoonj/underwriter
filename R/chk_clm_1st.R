@@ -11,6 +11,6 @@ chk_clm_1st <- function(data, id) {
     data <- as.matrix(data)
   m <- ncol(data)
   n <- nrow(data)
-  matrix(vapply(1:m, function(x) rcpp_first_claim(data[, x], id),
-                FUN.VALUE = double(n)), ncol = m)
+  Matrix(vapply(1:m, function(x) rcpp_first_claim(data[, x], id),
+                FUN.VALUE = double(n)), sparse = TRUE)
 }
