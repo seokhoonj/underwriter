@@ -7,10 +7,10 @@
 chk_clm_1st <- function(data, id) {
   if (is.character(id))
     id <- as.double(id)
-  if (!class(data) %in% c("matrix", "dgCMatrix"))
+  if (is.matrix(data))
     data <- as.matrix(data)
   m <- ncol(data)
   n <- nrow(data)
-  as(vapply(1:m, function(x) rcpp_first_claim(data[, x], id),
-            FUN.VALUE = double(n)), "CsparseMatrix")
+  matrix(vapply(1:m, function(x) rcpp_first_claim(data[, x], id),
+                FUN.VALUE = double(n)))
 }
