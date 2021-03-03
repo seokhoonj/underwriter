@@ -7,9 +7,6 @@
 #' @keywords combine claim and 1st claim
 cmb_clm_1st <- function(clm, clm_1st, otime) {
   loc <- which(otime == 1L)
-  clm <- as.matrix(clm)
-  clm_1st <- as.matrix(clm_1st)
   clm[, loc] <- clm_1st[, loc]
-  clm <- as(clm, "CsparseMatrix")
   return(clm)
 }
