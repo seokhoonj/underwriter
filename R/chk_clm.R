@@ -6,6 +6,7 @@
 #' @keywords claim boolean matrix
 chk_clm <- function(code, target) {
   matrix(vapply(code,
-                function(x) as.double(grepl(x, target, perl = TRUE)),
-                FUN.VALUE = double(length(target)), USE.NAMES = FALSE))
+                function(x) as.integer(grepl(x, target, perl = TRUE)),
+                FUN.VALUE = integer(length(target)), USE.NAMES = FALSE),
+         ncol = length(code))
 }
