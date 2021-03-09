@@ -78,3 +78,18 @@ k_spl <- function(x, k) {
                                      pad = "0"))
   return(z)
 }
+
+
+# vuw ---------------------------------------------------------------------
+
+get_vuw_jk <- function(jk, origin = 2007, past = 5, future = 4) {
+  jk_dc <- dcast.data.table(jk, person_id ~ stnd_y, value.var = "person_id", fun.aggregate = length)
+  cols <- paste0("y", names(jk_dc)[-1])
+  setnames(jk_dc, c("person_id", cols))
+  y <- paste0("y", seq(origin-past, origin+future-1, by = 1))
+  v <- lapply((past+1):(past+future), function(x) c(rep(1, x), rep(0, length(y)-x)))
+  w <- lapply(seq_along(v), function(x) paste(paste(y, "==", v[[x]]), collapse = " & "))
+  e <- paste(paste("(", w, ")"), collapse = " | ")
+  jk_hist = jk_dc[eval(parse(text = e)), .(person_id)]
+  jk[jk_hist, on = .(person_id), nomatch = 0L]
+}
