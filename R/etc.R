@@ -90,6 +90,6 @@ get_vuw_jk <- function(jk, origin = 2007, past = 5, future = 4) {
   v <- lapply((past+1):(past+future), function(x) c(rep(1, x), rep(0, length(y)-x)))
   w <- lapply(seq_along(v), function(x) paste(paste(y, "==", v[[x]]), collapse = " & "))
   e <- paste(paste("(", w, ")"), collapse = " | ")
-  jk_hist = jk_dc[eval(parse(text = e)), .(person_id)]
-  jk[jk_hist, on = .(person_id), nomatch = 0L]
+  jk_hist <- jk_dc[eval(parse(text = e)), .(person_id)]
+  jk_hist[jk, on = .(person_id), nomatch = 0L]
 }
