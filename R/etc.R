@@ -72,10 +72,10 @@ k_spl <- function(x, k) {
   n <- length(v)
   s <- ceiling(n / k)
   r <- n + s * (1-k)
+  q <- rep(1:(k-1), each = s)
   if (r >= 0) {
-    q <- c(rep(1:(k-1), each = s), rep(k, times = r))
+    q <- c(q, rep(k, times = r))
   } else {
-    q <- c(rep(1:(k-1), each = s))
     q <- q[1:(length(q)+r)]
   }
   z <- split(v, q)
