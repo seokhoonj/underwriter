@@ -72,7 +72,12 @@ k_spl <- function(x, k) {
   n <- length(v)
   s <- ceiling(n / k)
   r <- n + s * (1-k)
-  q <- c(rep(1:(k-1), each = s), rep(k, times = r))
+  if (r >= 0) {
+    q <- c(rep(1:(k-1), each = s), rep(k, times = r))
+  } else {
+    q <- c(rep(1:(k-1), each = s))
+    q <- q[1:(length(q)+r)]
+  }
   z <- split(v, q)
   names(z) <- paste0("spl.", str_pad(names(z), width = 2,
                                      pad = "0"))
