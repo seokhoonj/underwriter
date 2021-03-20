@@ -12,8 +12,7 @@ prm_sim <- function(rsk_info, clm_info, data, origin, yrs) {
   prf <- unique(data[, .(id, age, gnd, grd)]) # profile
   pop <- prf[, .(.N), .(age, gnd, grd)][order(age, gnd, grd)] # population
   npm <- cbind(prf, chk_prm_cnt(clm_info, data, origin, yrs)) # number of payment
-
-  prm_vec <- as.list(vector(length = nrow(pop)))
+  prm_vec <- vector(mode = "list", length = nrow(pop))
   for (j in 1:nrow(pop)) {
     age_var <- pop$age[j]
     gnd_var <- pop$gnd[j]
@@ -23,9 +22,10 @@ prm_sim <- function(rsk_info, clm_info, data, origin, yrs) {
     id <- tmp$id
     col <- getcol(tmp, 'id|age|gnd|grd', contain = FALSE)
     tmp <- as.matrix(tmp[, ..col])
-    tmp_vec <- as.list(vector(length = nrow(tmp)))
+    tmp_vec <- vector(mode = "list", length = nrow(tmp))
     for (i in 1:nrow(tmp)) {
-      tmp_vec[[i]] <- vapply(seq_along(tmp[i,]), function(x) sum(prm[1:tmp[i, x], x]),
+      tmp_vec[[i]] <- vapply(seq_along(tmp[i,]),
+                             function(x) sum(prm[1:tmp[i, x], x]),
                              FUN.VALUE = as.double(length(tmp[i,])))
     }
     prm_vec[[j]] <- data.table(id, do.call('rbind', tmp_vec))
