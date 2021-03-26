@@ -13,8 +13,8 @@ chk_clm_kcd <- function(code, target, cores) {
                 ncol = length(code), byrow = FALSE)
   } else {
     cl <- makeCluster(cores)
-    z <- as(matrix(unlist(parLapply(cl, code, pull_clm_kcd, target = target)),
-                   ncol = length(code), byrow = FALSE), "CsparseMatrix")
+    z <- matrix(unlist(parLapply(cl, code, pull_clm_kcd, target = target)),
+                ncol = length(code), byrow = FALSE)
     stopCluster(cl)
   }
   return(z)
