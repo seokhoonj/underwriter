@@ -3,7 +3,7 @@
 **Author**: Seokhoon Joo
 
 ## Overview
-The Underwriter package provides tools for processing and analyzing insurance claim data, with a focus on the Insurance Credit Information System (ICIS). It helps Korean insurance underwriters evaluate medical histories and assess risks based on hospitalization, surgery, and outpatient records.
+The Underwriter package provides tools for processing and analyzing insurance claim data, with a focus on the Insurance Credit Information System (ICIS) in Korea. It helps life insurance underwriters evaluate medical histories and assess risks based on hospitalization, surgery, and outpatient records.
 
 ## Installation
 
