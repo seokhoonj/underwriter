@@ -12,6 +12,7 @@ class ClaimColumns(Enum):
     KCD2 = 'kcd2'
     KCD3 = 'kcd3'
     KCD4 = 'kcd4'
+    INQUIRY_DATE = 'inq_date'
     CLAIM_DATE = 'clm_date'
     HOS_START_DATE = 'hos_sdate'
     HOS_END_DATE = 'hos_edate'
@@ -35,6 +36,7 @@ class ICISColumns(Enum):
     Includes additional columns created during data processing.
     """
     ID = ClaimColumns.ID.value
+    INQUIRY_DATE = ClaimColumns.INQUIRY_DATE.value
     CLAIM_DATE = ClaimColumns.CLAIM_DATE.value
     HOS_START_DATE = ClaimColumns.HOS_START_DATE.value
     HOS_END_DATE = ClaimColumns.HOS_END_DATE.value

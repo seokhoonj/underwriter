@@ -84,20 +84,26 @@ class ICIS:
         surgeries, and outpatient visits within specified
         time periods from the underwriting date.
     '''
-    UW_DATE: Final[pd.Timestamp] = pd.Timestamp.today() # Default underwriting date (today)
+    INQ_DATE: Final[pd.Timestamp] = pd.Timestamp.today() # Default inquiry date (today)
     FILTER_DAYS: Final[int] = 1825 # Default lookback period (5 years: 365 * 5 days)
 
-    def __init__(self, claim: pd.DataFrame, main: pd.DataFrame, uw_date: Union[str, pd.Timestamp] = UW_DATE, filter_days: int = FILTER_DAYS):
+    def __init__(self, claim: pd.DataFrame, main: pd.DataFrame, inq_date: Union[str, pd.Timestamp] = INQ_DATE, filter_days: int = FILTER_DAYS):
         # Create a copy of input data to preserve original
         self.claim = claim.copy()
         self.main = main
 
-         # Convert date columns to datetime format
+        # Convert date columns to datetime format
         date_columns = ['clm_date', 'hos_sdate', 'hos_edate']
         for col in date_columns:
             if col in self.claim.columns:
                 self.claim[col] = pd.to_datetime(self.claim[col], format='%Y%m%d')
 
+        # Set or create inq_date column
+        if 'inq_date' not in self.claim.columns:
+            self.claim['inq_date'] = pd.to_datetime(inq_date)
+        else:
+            self.claim['inq_date'] = pd.to_datetime(self.claim['inq_date'], format='%Y%m%d')
+            
         # Initialize instance variables
         self.filled = None
         self.melted = None
@@ -105,7 +111,6 @@ class ICIS:
         self.underwent = None
         self.elapsed = None
         self.merged = None
-        self.uw_date = pd.to_datetime(uw_date) # string or datetime
         self.filter_days = filter_days
 
     def validate_columns(self) -> None:
@@ -113,57 +118,36 @@ class ICIS:
         Validates if all required columns exist in claim and main DataFrames.
         
         Required columns:
-            claim: ClaimColumns enum values in specified order
-            main: MainColumns enum values
+            claim: All ClaimColumns enum values except 'inq_date'
+            main: All MainColumns enum values
+        
+        Note:
+            - Only checks for the existence of required columns
+            - Additional columns are allowed and ignored
+            - 'inq_date' column may or may not exist and is ignored in validation
+            - Column order is not checked
         
         Raises:
-            ValueError: If any required column is missing or if there are unexpected columns
-            ValueError: If columns are not in the expected order
+            ValueError: If any required column is missing
         """
-        # Check claim DataFrame columns existence
-        claim_required = [col.value for col in ClaimColumns]
-        claim_current = list(self.claim.columns)
+        # Get required columns excluding inq_date
+        claim_required = {col.value for col in ClaimColumns if col.value != 'inq_date'}
         
-        missing_claim_cols = set(claim_required) - set(claim_current)
-        unexpected_claim_cols = set(claim_current) - set(claim_required)
-        
+        # Check if all required columns exist in claim DataFrame
+        missing_claim_cols = claim_required - set(self.claim.columns)
         if missing_claim_cols:
             raise ValueError(
                 f"Missing required columns in claim DataFrame: {sorted(missing_claim_cols)}\n"
-                f"Required columns: {claim_required}"
+                f"Required columns: {sorted(claim_required)}"
             )
         
-        if unexpected_claim_cols:
-            raise ValueError(
-                f"Unexpected columns found in claim DataFrame: {sorted(unexpected_claim_cols)}\n"
-                f"Expected columns: {claim_required}"
-            )
-        
-        # Check claim DataFrame column order
-        if claim_current != claim_required:
-            raise ValueError(
-                f"Columns in claim DataFrame are not in the expected order.\n"
-                f"Current order: {claim_current}\n"
-                f"Expected order: {claim_required}"
-            )
-        
-        # Check main DataFrame columns
-        main_required = [col.value for col in MainColumns]
-        main_current = list(self.main.columns)
-        
-        missing_main_cols = set(main_required) - set(main_current)
-        unexpected_main_cols = set(main_current) - set(main_required)
-        
+        # Check if all required columns exist in main DataFrame
+        main_required = {col.value for col in MainColumns}
+        missing_main_cols = main_required - set(self.main.columns)
         if missing_main_cols:
             raise ValueError(
                 f"Missing required columns in main DataFrame: {sorted(missing_main_cols)}\n"
-                f"Required columns: {main_required}"
-            )
-        
-        if unexpected_main_cols:
-            raise ValueError(
-                f"Unexpected columns found in main DataFrame: {sorted(unexpected_main_cols)}\n"
-                f"Expected columns: {main_required}"
+                f"Required columns: {sorted(main_required)}"
             )
 
     def drop_duplicates(self) -> pd.DataFrame:
@@ -177,26 +161,25 @@ class ICIS:
 
     def filter_by_clm_date(self) -> pd.DataFrame:
         """
-        Filters out claims that are older than self.filter_days from the underwriting date.
+        Filters out claims that are older than self.filter_days from the inquiry date.
 
         Formula: 
-            uw_date - claim_date <= filter_days
+            inq_date - clm_date <= filter_days
 
         Example:
-            If filter_days = 1825 (5 years = 365 * 5) and uw_date is 2024-01-01:
+            If filter_days = 1825 (5 years = 365 * 5) and inq_date is 2024-01-01:
             - A claim from 2019-01-01 will be kept (1825 days)
             - A claim from 2018-12-31 will be filtered out (1826 days)
 
         Note:
-            Uses self.filter_days and self.uw_date set during initialization.
+            Uses self.filter_days and self.inq_date set during initialization.
             Resets index after filtering.
 
         Returns:
             DataFrame: Filtered data containing only recent claims within the specified period
         """
-
-        # Calculate date difference and filter
-        mask = self.uw_date - self.filled['clm_date'] <= pd.Timedelta(days=self.filter_days)
+        # Calculate date difference using inq_date column
+        mask = self.filled['inq_date'] - self.filled['clm_date'] <= pd.Timedelta(days=self.filter_days)
         self.filled = self.filled[mask]
         self.filled.reset_index(drop=True, inplace=True)
         return self.filled
@@ -390,31 +373,24 @@ class ICIS:
         Groups by main diagnosis code instead of individual KCD codes.
 
         Formula:
-            hos: uw_date - hos_edate_mod + 1
-            sur: uw_date - clm_date + 1
-            out: uw_date - clm_date + 1
+            hos: inq_date - hos_edate_mod + 1
+            sur: inq_date - clm_date + 1
+            out: inq_date - clm_date + 1
 
         Note: 
+            - Uses inq_date column for all calculations
             - Larger values indicate events that occurred further in the past
             - For hospitalization cases, uses hos_edate_mod
             - For other cases, uses clm_date
 
-        Definitions:
-            - elp_day_si: Elapsed days for hospitalization/surgery events only
-            - elp_day_std: Elapsed days for all medical event
-
         Returns:
-            DataFrame: Elapsed days by id and kcd_main, with columns:
-                - id: Patient identifier
-                - kcd_main: Main diagnosis code group
-                - elp_day_si: Days elapsed since most recent hospitalization/surgery
-                - elp_day_std: Days elapsed since most recent medical event
+            DataFrame: Elapsed days by id and kcd_main
         """
-        # Calculate elapsed days for each KCD code
+        # Calculate elapsed days using inq_date column
         self.melted['elp_day'] = np.where(
             self.melted['type'].str.contains('hos', na=False),
-            (self.uw_date - self.melted['hos_edate_mod'] + pd.Timedelta(days=1)).dt.days,
-            (self.uw_date - self.melted['clm_date'] + pd.Timedelta(days=1)).dt.days
+            (self.melted['inq_date'] - self.melted['hos_edate_mod'] + pd.Timedelta(days=1)).dt.days,
+            (self.melted['inq_date'] - self.melted['clm_date'] + pd.Timedelta(days=1)).dt.days
         )
         
         # Create mask for hos/sur events
