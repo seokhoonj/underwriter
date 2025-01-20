@@ -20,6 +20,7 @@ The package requires two main data inputs:
    - Unique identifier for each insured person or policy
    - Primary diagnosis code
    - Secondary diagnosis codes
+   - Date when inquiry was made (optional - if not specified, defaults to today)
    - Date when the claim was filed
    - Hospital admission and discharge dates
    - Number of hospitalization days and counts

@@ -41,7 +41,6 @@ class ICIS:
         2. Data cleansing
             - drop_duplicates(): Remove duplicate records
             - fill_kcd_forward(): Forward fill KCD codes
-            - filter_by_clm_date(): Filter by claim date
         
         3. Data preparation
             - set_type(): Set medical care types
@@ -157,31 +156,6 @@ class ICIS:
 
     def fill_kcd_forward(self) -> pd.DataFrame:
         self.filled = fill_kcd_forward(self.claim)
-        return self.filled
-
-    def filter_by_clm_date(self) -> pd.DataFrame:
-        """
-        Filters out claims that are older than self.filter_days from the inquiry date.
-
-        Formula: 
-            inq_date - clm_date <= filter_days
-
-        Example:
-            If filter_days = 1825 (5 years = 365 * 5) and inq_date is 2024-01-01:
-            - A claim from 2019-01-01 will be kept (1825 days)
-            - A claim from 2018-12-31 will be filtered out (1826 days)
-
-        Note:
-            Uses self.filter_days and self.inq_date set during initialization.
-            Resets index after filtering.
-
-        Returns:
-            DataFrame: Filtered data containing only recent claims within the specified period
-        """
-        # Calculate date difference using inq_date column
-        mask = self.filled['inq_date'] - self.filled['clm_date'] <= pd.Timedelta(days=self.filter_days)
-        self.filled = self.filled[mask]
-        self.filled.reset_index(drop=True, inplace=True)
         return self.filled
 
     def set_type(self) -> pd.DataFrame:
@@ -332,12 +306,27 @@ class ICIS:
         """
         Combines hos_vdate lists by id and kcd_main, removes duplicates, and counts unique dates.
         Groups by main diagnosis code instead of individual KCD codes.
+        Only includes records within the filter_days period from inquiry date.
+
+        Filter Formula: 
+            inq_date - clm_date <= filter_days
+
+        Example:
+            If filter_days = 1825 (5 years = 365 * 5) and inq_date is 2024-01-01:
+            - A claim from 2019-01-01 will be kept (1825 days)
+            - A claim from 2018-12-31 will be filtered out (1826 days)
         
         Returns:
             DataFrame: Summarized data with unique hospitalization date counts per id, kcd_main group
         """
-        # Filter for hospitalization cases and calculate unique dates
-        self.hospitalized = (self.melted[self.melted['type'].str.contains('hos', na=False)]
+        # Create filter condition
+        date_filter = (self.melted['inq_date'] - self.melted['clm_date']).dt.days <= self.filter_days
+
+        # Filter for hospitalization cases within filter period and calculate unique dates
+        self.hospitalized = (self.melted[
+            (self.melted['type'].str.contains('hos', na=False)) &
+            (date_filter)
+        ]
             .groupby(['id', 'kcd_main'])
             .agg(
                 hos_day = ('hos_vdate', lambda x: len(set([date for dates in x for date in dates if date])))
@@ -351,20 +340,34 @@ class ICIS:
         """
         Calculate unique surgery dates by id and kcd_main.
         Groups by main diagnosis code instead of individual KCD codes.
-        Only counts rows where sur_cnt > 0.
+        Only counts rows where sur_cnt > 0 and within the filter_days period from inquiry date.
         
+        Filter Formula: 
+            inq_date - clm_date <= filter_days
+
+        Example:
+            If filter_days = 1825 (5 years = 365 * 5) and inq_date is 2024-01-01:
+            - A claim from 2019-01-01 will be kept (1825 days)
+            - A claim from 2018-12-31 will be filtered out (1826 days)
+
         Returns:
             DataFrame: Number of unique surgery dates per id, kcd_main group
         """
-        # Filter for surgery cases and count unique dates by kcd_main
-        self.underwent = (self.melted[self.melted['sur_cnt'] > 0]
+        # Create filter condition
+        date_filter = (self.melted['inq_date'] - self.melted['clm_date']).dt.days <= self.filter_days
+
+        # Filter for surgery cases within filter period and count unique dates by kcd_main
+        self.underwent = (self.melted[
+            (self.melted['sur_cnt'] > 0) &
+            (date_filter)
+        ]
             .groupby(['id', 'kcd_main'])
             .agg(
                 sur_cnt = ('clm_date', 'nunique')
             )
             .reset_index()
         )
-        
+
         return self.underwent
 
     def calc_elp_day(self) -> pd.DataFrame:
@@ -455,7 +458,6 @@ class ICIS:
         1. Data cleaning
             - Remove duplicates
             - Forward fill KCD codes
-            - Filter by claim date
         
         2. Data preparation
             - Set medical care types
@@ -482,7 +484,6 @@ class ICIS:
         # 2. Data cleansing
         self.drop_duplicates()
         self.fill_kcd_forward()
-        self.filter_by_clm_date()
         
         # 3. Data preparation
         self.set_type()
