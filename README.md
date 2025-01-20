@@ -33,7 +33,7 @@ The package requires two main data inputs:
 
 ### Basic Example
 ```python
-from underwriter import ICIS
+from underwriter.icis import ICIS
 
 # Initialize ICIS with your data
 icis = ICIS(claim=ICIS_Claim_Data, main=Main_Disease_Classification_Data)
