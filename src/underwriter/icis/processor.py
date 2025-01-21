@@ -427,8 +427,8 @@ class ICIS:
                 - kcd_main: Main diagnosis code group
                 - hos_day: Total days of hospitalization (0 if None)
                 - sur_cnt: Number of surgeries (0 if None)
-                - elp_day_si: Days elapsed since most recent hospital/surgery event
-                - elp_day_std: Days elapsed since most recent medical event
+                - elp_day_si: Days elapsed since most recent hospital/surgery event (Simplified Issue)
+                - elp_day_std: Days elapsed since most recent medical event (Standard)
         """
         # Start with hospitalization data
         self.merged = self.hospitalized.merge(
