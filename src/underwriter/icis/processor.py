@@ -1,4 +1,4 @@
-from .columns import CLAIM_COLUMNS, ID_COLUMNS, KCD_COLUMNS, MAIN_COLUMNS
+from .columns import ClaimColumns, MainColumns, CLAIM_COLUMNS, MAIN_COLUMNS, ID_COLUMNS, KCD_COLUMNS
 from ..utils.helpers import fill_kcd_forward, get_date_range
 import numpy as np
 import pandas as pd
@@ -63,6 +63,7 @@ class ICIS:
         data DataFrame:
             - id: Patient identifier
             - kcd0-kcd4: Diagnosis codes
+            - inq_date: Inquiry date
             - clm_date: Claim date
             - hos_sdate: Hospital admission date
             - hos_edate: Hospital discharge date
@@ -92,13 +93,16 @@ class ICIS:
         self.main = main
 
         # Convert date columns to datetime format
-        date_columns = ['clm_date', 'hos_sdate', 'hos_edate', 'inq_date']
+        date_columns = [
+            ClaimColumns.INQ_DATE.value,
+            ClaimColumns.CLM_DATE.value,
+            ClaimColumns.HOS_SDATE.value,
+            ClaimColumns.HOS_EDATE.value
+        ]
+
         for col in date_columns:
             if col in self.claim.columns:
-                # Convert R's Date NA (-2147483648) to numpy NaN first
-                self.claim[col] = self.claim[col].replace(-2147483648, np.nan)
-                # Then convert to datetime
-                self.claim[col] = pd.to_datetime(self.claim[col], format='mixed', errors='coerce')
+                self.claim[col] = pd.to_datetime(self.claim[col], format='%Y%m%d', errors='coerce')
 
         # Initialize instance variables
         self.filled = None
@@ -222,7 +226,7 @@ class ICIS:
             var_name='kcd_ord', 
             value_name='kcd'
         )
-        
+
         # Convert kcd_ord from 'kcd0' to 0
         self.melted['kcd_ord'] = self.melted['kcd_ord'].str.replace('kcd', '').astype(int)
 

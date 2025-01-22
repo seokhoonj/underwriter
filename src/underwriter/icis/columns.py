@@ -51,4 +51,4 @@ class ICISColumns(Enum):
 CLAIM_COLUMNS: Final[List[str]] = [col.value for col in ClaimColumns]
 MAIN_COLUMNS: Final[List[str]] = [col.value for col in MainColumns]
 ID_COLUMNS: Final[List[str]] = [col.value for col in ICISColumns]
-KCD_COLUMNS: Final[List[str]] = [col.value for col in ClaimColumns if col.name.startswith('KCD_')]
+KCD_COLUMNS: Final[List[str]] = [col.value for col in ClaimColumns if col.name.startswith('KCD')]
