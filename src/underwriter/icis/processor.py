@@ -1,4 +1,4 @@
-from .columns import CLAIM_COLUMNS, ID_COLS, KCD_COLS, MAIN_COLUMNS
+from .columns import CLAIM_COLUMNS, ID_COLUMNS, KCD_COLUMNS, MAIN_COLUMNS
 from ..utils.helpers import fill_kcd_forward, get_date_range
 import numpy as np
 import pandas as pd
@@ -217,8 +217,8 @@ class ICIS:
         # Melt KCD columns
         self.melted = pd.melt(
             self.filled, 
-            id_vars=ID_COLS, 
-            value_vars=KCD_COLS, 
+            id_vars=ID_COLUMNS, 
+            value_vars=KCD_COLUMNS, 
             var_name='kcd_ord', 
             value_name='kcd'
         )
