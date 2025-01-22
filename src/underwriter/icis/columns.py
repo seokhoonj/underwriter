@@ -12,14 +12,14 @@ class ClaimColumns(Enum):
     KCD2 = 'kcd2'
     KCD3 = 'kcd3'
     KCD4 = 'kcd4'
-    INQUIRY_DATE = 'inq_date'
-    CLAIM_DATE = 'clm_date'
-    HOS_START_DATE = 'hos_sdate'
-    HOS_END_DATE = 'hos_edate'
+    INQ_DATE = 'inq_date'
+    CLM_DATE = 'clm_date'
+    HOS_SDATE = 'hos_sdate'
+    HOS_EDATE = 'hos_edate'
     HOS_DAY = 'hos_day'
-    HOS_COUNT = 'hos_cnt'
-    OUT_COUNT = 'out_cnt'
-    SUR_COUNT = 'sur_cnt'
+    HOS_CNT = 'hos_cnt'
+    OUT_CNT = 'out_cnt'
+    SUR_CNT = 'sur_cnt'
 
 class MainColumns(Enum):
     """
@@ -36,19 +36,19 @@ class ICISColumns(Enum):
     Includes additional columns created during data processing.
     """
     ID = ClaimColumns.ID.value
-    INQUIRY_DATE = ClaimColumns.INQUIRY_DATE.value
-    CLAIM_DATE = ClaimColumns.CLAIM_DATE.value
-    HOS_START_DATE = ClaimColumns.HOS_START_DATE.value
-    HOS_END_DATE = ClaimColumns.HOS_END_DATE.value
-    HOS_END_DATE_MOD = 'hos_edate_mod'
+    INQ_DATE = ClaimColumns.INQ_DATE.value
+    CLM_DATE = ClaimColumns.CLM_DATE.value
+    HOS_SDATE = ClaimColumns.HOS_SDATE.value
+    HOS_EDATE = ClaimColumns.HOS_EDATE.value
+    HOS_EDATE_MOD = 'hos_edate_mod'
     HOS_DAY = ClaimColumns.HOS_DAY.value
-    HOS_COUNT = ClaimColumns.HOS_COUNT.value
-    OUT_COUNT = ClaimColumns.OUT_COUNT.value
-    SUR_COUNT = ClaimColumns.SUR_COUNT.value
+    HOS_CNT = ClaimColumns.HOS_CNT.value
+    OUT_CNT = ClaimColumns.OUT_CNT.value
+    SUR_CNT = ClaimColumns.SUR_CNT.value
     TYPE = 'type'
 
 # Define column lists using Enum values
-CLAIM_COLS: Final[List[str]] = [col.value for col in ClaimColumns]
-MAIN_COLS: Final[List[str]] = [col.value for col in MainColumns]
-ID_COLS: Final[List[str]] = [col.value for col in ICISColumns]
-KCD_COLS: Final[List[str]] = [col.value for col in ClaimColumns if col.name.startswith('KCD')]
+CLAIM_COLUMNS: Final[List[str]] = [col.value for col in ClaimColumns]
+MAIN_COLUMNS: Final[List[str]] = [col.value for col in MainColumns]
+ID_COLUMNS: Final[List[str]] = [col.value for col in ICISColumns]
+KCD_COLUMNS: Final[List[str]] = [col.value for col in ClaimColumns if col.name.startswith('KCD_')]

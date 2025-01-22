@@ -1,4 +1,4 @@
-from .columns import ID_COLS, KCD_COLS, ClaimColumns, MainColumns
+from .columns import CLAIM_COLUMNS, ID_COLS, KCD_COLS, MAIN_COLUMNS
 from ..utils.helpers import fill_kcd_forward, get_date_range
 import numpy as np
 import pandas as pd
@@ -83,28 +83,23 @@ class ICIS:
         surgeries, and outpatient visits within specified
         time periods from the underwriting date.
     '''
-    INQ_DATE: Final[pd.Timestamp] = pd.Timestamp.today() # Default inquiry date (today)
     FILTER_DAYS: Final[int] = 1825 # Default lookback period (5 years: 365 * 5 days)
+    # INQ_DATE: Final[pd.Timestamp] = pd.Timestamp.today() # Default inquiry date (today)
 
-    def __init__(self, claim: pd.DataFrame, main: pd.DataFrame, inq_date: Union[str, pd.Timestamp] = INQ_DATE, filter_days: int = FILTER_DAYS):
+    def __init__(self, claim: pd.DataFrame, main: pd.DataFrame, filter_days: int = FILTER_DAYS):
         # Create a copy of input data to preserve original
         self.claim = claim.copy()
         self.main = main
 
         # Convert date columns to datetime format
-        date_columns = ['clm_date', 'hos_sdate', 'hos_edate']
+        date_columns = ['clm_date', 'hos_sdate', 'hos_edate', 'inq_date']
         for col in date_columns:
             if col in self.claim.columns:
-                self.claim.loc[self.claim[col] == -2147483648, col] = pd.NaT  # If the date column is a R date type, convert -2147483648 to NaT
+                # Convert R's Date NA (-2147483648) to numpy NaN first
+                self.claim[col] = self.claim[col].replace(-2147483648, np.nan)
+                # Then convert to datetime
                 self.claim[col] = pd.to_datetime(self.claim[col], errors='coerce')
 
-        # Set or create inq_date column
-        if 'inq_date' not in self.claim.columns:
-            self.claim['inq_date'] = pd.to_datetime(inq_date, errors='coerce')
-        else:
-            self.claim.loc[self.claim['inq_date'] == -2147483648, 'inq_date'] = pd.NaT # If the date column is a R date type, convert -2147483648 to NaT
-            self.claim['inq_date'] = pd.to_datetime(self.claim['inq_date'], errors='coerce')
-            
         # Initialize instance variables
         self.filled = None
         self.melted = None
@@ -119,20 +114,19 @@ class ICIS:
         Validates if all required columns exist in claim and main DataFrames.
         
         Required columns:
-            claim: All ClaimColumns enum values except 'inq_date'
+            claim: All ClaimColumns enum values
             main: All MainColumns enum values
         
         Note:
             - Only checks for the existence of required columns
             - Additional columns are allowed and ignored
-            - 'inq_date' column may or may not exist and is ignored in validation
             - Column order is not checked
         
         Raises:
             ValueError: If any required column is missing
         """
         # Get required columns excluding inq_date
-        claim_required = {col.value for col in ClaimColumns if col.value != 'inq_date'}
+        claim_required = {col.value for col in CLAIM_COLUMNS if col.value != 'inq_date'}
         
         # Check if all required columns exist in claim DataFrame
         missing_claim_cols = claim_required - set(self.claim.columns)
@@ -143,7 +137,7 @@ class ICIS:
             )
         
         # Check if all required columns exist in main DataFrame
-        main_required = {col.value for col in MainColumns}
+        main_required = {col.value for col in MAIN_COLUMNS}
         missing_main_cols = main_required - set(self.main.columns)
         if missing_main_cols:
             raise ValueError(
