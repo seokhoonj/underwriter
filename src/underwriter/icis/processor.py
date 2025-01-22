@@ -95,13 +95,15 @@ class ICIS:
         date_columns = ['clm_date', 'hos_sdate', 'hos_edate']
         for col in date_columns:
             if col in self.claim.columns:
-                self.claim[col] = pd.to_datetime(self.claim[col], format='%Y%m%d')
+                self.claim.loc[self.claim[col] == -2147483648, col] = pd.NaT # If the date column is a R date type, convert to -2147483648 to NaT
+                self.claim[col] = pd.to_datetime(self.claim[col], errors='coerce')
 
         # Set or create inq_date column
         if 'inq_date' not in self.claim.columns:
-            self.claim['inq_date'] = pd.to_datetime(inq_date)
+            self.claim['inq_date'] = pd.to_datetime(inq_date, errors='coerce')
         else:
-            self.claim['inq_date'] = pd.to_datetime(self.claim['inq_date'], format='%Y%m%d')
+            self.claim.loc[self.claim['inq_date'] == -2147483648, col] = pd.NaT # If the date column is a R date type, convert -2147483648 to NaT
+            self.claim['inq_date'] = pd.to_datetime(self.claim['inq_date'], errors='coerce')
             
         # Initialize instance variables
         self.filled = None
