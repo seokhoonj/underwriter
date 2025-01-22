@@ -98,7 +98,7 @@ class ICIS:
                 # Convert R's Date NA (-2147483648) to numpy NaN first
                 self.claim[col] = self.claim[col].replace(-2147483648, np.nan)
                 # Then convert to datetime
-                self.claim[col] = pd.to_datetime(self.claim[col], errors='coerce')
+                self.claim[col] = pd.to_datetime(self.claim[col], format='mixed', errors='coerce')
 
         # Initialize instance variables
         self.filled = None
@@ -125,20 +125,24 @@ class ICIS:
         Raises:
             ValueError: If any required column is missing
         """
-        # Get required columns excluding inq_date
-        claim_required = {col.value for col in CLAIM_COLUMNS if col.value != 'inq_date'}
+        # Check claim DataFrame columns
+        claim_required = set(CLAIM_COLUMNS)
+        claim_current = set(self.claim.columns)
         
         # Check if all required columns exist in claim DataFrame
-        missing_claim_cols = claim_required - set(self.claim.columns)
+        missing_claim_cols = claim_required - claim_current
         if missing_claim_cols:
             raise ValueError(
                 f"Missing required columns in claim DataFrame: {sorted(missing_claim_cols)}\n"
                 f"Required columns: {sorted(claim_required)}"
             )
         
+        # Check main DataFrame columns
+        main_required = set(MAIN_COLUMNS)
+        main_current = set(self.main.columns)
+    
         # Check if all required columns exist in main DataFrame
-        main_required = {col.value for col in MAIN_COLUMNS}
-        missing_main_cols = main_required - set(self.main.columns)
+        missing_main_cols = main_required - main_current
         if missing_main_cols:
             raise ValueError(
                 f"Missing required columns in main DataFrame: {sorted(missing_main_cols)}\n"
@@ -300,6 +304,7 @@ class ICIS:
 
     def calc_hos_day(self) -> pd.DataFrame:
         """
+        Calculate actual hospitalization days by id and kcd_main.
         Combines hos_vdate lists by id and kcd_main, removes duplicates, and counts unique dates.
         Groups by main diagnosis code instead of individual KCD codes.
         Only includes records within the filter_days period from inquiry date.
