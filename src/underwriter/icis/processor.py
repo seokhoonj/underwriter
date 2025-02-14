@@ -244,6 +244,7 @@ class ICIS:
         """
         Merge kcd_main and sub_chk columns from main DataFrame to data DataFrame.
         Matching is done based on the 'kcd' column.
+        If kcd_main is missing after merge, fill with 'ZZZ' and set sub_chk to 1.
         
         Returns:
             DataFrame: data merged with main information
@@ -257,6 +258,12 @@ class ICIS:
             how='left',
             on='kcd'
         )
+        
+        # Fill missing kcd_main with 'ZZZ'
+        self.melted['kcd_main'] = self.melted['kcd_main'].fillna('ZZZ')
+        
+        # Set sub_chk to 1 only where kcd_main is 'ZZZ'
+        self.melted.loc[self.melted['kcd_main'] == 'ZZZ', 'sub_chk'] = 1
         
         return self.melted
     
