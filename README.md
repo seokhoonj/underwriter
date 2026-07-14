@@ -1,46 +1,74 @@
-# Underwriter Package
+# underwriter
 
-**Author**: Seokhoon Joo
+Automated underwriting from insurance claim history. A [polars](https://pola.rs)
+pipeline that cleanses Korean credit-information (ICIS) claim history, maps
+diagnosis codes to representative diseases, and aggregates per-insured
+underwriting inputs — then, given a rule set, matches those inputs and combines
+the per-disease decisions into a final per-insured decision.
 
-## Overview
-The Underwriter package provides tools for processing and analyzing insurance claim data, with a focus on the Insurance Credit Information System (ICIS) in Korea. It helps life insurance underwriters evaluate medical histories and assess risks based on hospitalization, surgery, and outpatient records.
+The engine is data-agnostic: the rule set is supplied at run time, so it is not
+tied to any one insurer.
 
-## Installation
+> **Sibling R package:** [seokhoonj/underwriter-r](https://github.com/seokhoonj/underwriter-r).
+> The two share one contract; the Python front half is validated to reproduce the
+> R output exactly.
+
+## Install
 
 ```bash
-pip install git+https://github.com/seokhoonj/underwriter.git
+pip install "git+https://github.com/seokhoonj/underwriter.git"
+pip install "underwriter[pandas] @ git+https://github.com/seokhoonj/underwriter.git"  # accept/return pandas too
 ```
 
-## Usage
+Python 3.10+. polars only; pandas is optional.
 
-### Required Data
-The package requires two main data inputs:
+## Quick start
 
-1. **ICIS Claim Data**: Insurance claim history containing:
-   - Unique identifier for each insured person or policy
-   - Primary diagnosis code
-   - Secondary diagnosis codes
-   - Date when inquiry was made (optional - if not specified, defaults to today)
-   - Date when the claim was filed
-   - Hospital admission and discharge dates
-   - Number of hospitalization days and counts
-   - Number of outpatient visits
-   - Number of surgeries
+The front half turns raw claim lines into per-insured underwriting inputs. The
+example uses the bundled synthetic generators, so it runs with no data files.
 
-2. **Main Disease Classification Data**: Reference data for disease categorization and filterting:
-   - KCD (Korean Classification of Diseases) codes
-   - Main disease categories
-   - Filtering criteria
-
-### Basic Example
 ```python
-from underwriter.icis import ICIS
+import underwriter as uw
 
-# Initialize ICIS with your data
-icis = ICIS(claim=ICIS_Claim_Data, main=Main_Disease_Classification_Data)
+# synthetic ICIS claims + a small KCD -> disease lookup (stand-ins for real data)
+claims = uw.make_icis(n_insured=300, seed=0)
+disease = uw.make_disease_table()
 
-# Process the data
-result = icis.process()
+cleaned = uw.filter_latest_inquiry(uw.clean_icis(claims))   # parse, reconcile stays, dedup
+mapped = uw.map_disease(uw.melt_kcd(cleaned), disease)       # -> kcd_main + scope flags
+aggregated = uw.aggregate_disease(mapped)                    # one row per (id, disease)
+
+aggregated.head()
+# every insured survives every stage: no id is ever dropped
+assert aggregated["id"].n_unique() == claims["id"].n_unique()
 ```
 
-For detailed examples and step-by-step guide, see [examples/notebooks/01.ICIS-Claim-Data-Processing.ipynb](examples/notebooks/01.ICIS-Claim-Data-Processing.ipynb)
+See [examples/notebooks/01.ICIS-Claim-Data-Processing.ipynb](examples/notebooks/01.ICIS-Claim-Data-Processing.ipynb).
+
+## Pipeline
+
+| stage | function | in → out |
+|---|---|---|
+| cleanse | `clean_icis`, `filter_latest_inquiry` | raw claim lines → one clean row per line, latest inquiry |
+| melt | `melt_kcd` | wide `kcd0..kcd4` → one row per diagnosis code |
+| map | `map_disease` | code → representative disease + lookback / scope flags |
+| aggregate | `aggregate_disease` | → one row per `(id, disease)`: counts and elapsed days |
+
+**No insured left behind.** A line with no code becomes `VACANT`, an unreadable
+code `IRREGULAR`, a valid-but-unmapped code `UNMAPPED`, and an insured whose
+whole history has aged out is carried on an `EXPIRED` placeholder — so every
+insured reaches a decision.
+
+## Rule engine
+
+With a rule set (disease rules, sentinel catch-alls, and decision tables),
+`Underwriter(rulebook).underwrite(aggregated)` band-matches each input and
+combines the per-disease decisions into one decision per insured (accept /
+conditional / decline / refer). The rule set is a company resource supplied at
+run time and is not shipped with the package.
+
+```python
+book = uw.Rulebook.from_excel("rulebook.xlsx")   # your own rule workbook
+decision = uw.Underwriter(book).underwrite(aggregated)
+decision.tabulate()                               # decision distribution per coverage
+```
