@@ -3,9 +3,15 @@ auto-decided vs underwriter-referred share (or the category breakdown)."""
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import polars as pl
 
 from .theme import AUTO_BLUE, REFER_RED, import_pyplot, style_axes
+
+if TYPE_CHECKING:  # pragma: no cover - typing only (optional matplotlib dep)
+    from matplotlib.axes import Axes
+    from matplotlib.figure import Figure
 
 
 def plot_decision(
@@ -15,8 +21,8 @@ def plot_decision(
     order: str = "auto_high",
     min_label: float = 0.03,
     title: str = "Decision composition per coverage",
-    ax=None,
-):
+    ax: Axes | None = None,
+) -> Figure:
     """Stacked bar per coverage from a :meth:`Decision.tabulate` result. ``group``
     is ``"auto"`` (default; auto vs referred) or ``"category"``. ``order`` sorts
     coverages by ``"auto_high"`` (default), ``"auto_low"``, or ``"column"``."""
@@ -40,10 +46,10 @@ def plot_decision(
         levels = [v for v in (1, 0) if v in levels]  # auto at bottom, referred on top
     colours = {1: AUTO_BLUE, 0: REFER_RED} if group == "auto" else None
 
-    wide = {
-        lv: dict(zip(*data.filter(pl.col(group) == lv).select("coverage", "prop").to_dict(as_series=False).values()))
-        for lv in levels
-    }
+    wide = {}
+    for lv in levels:
+        pairs = data.filter(pl.col(group) == lv).select("coverage", "prop")
+        wide[lv] = {coverage: prop for coverage, prop in pairs.iter_rows()}
 
     if ax is None:
         _, ax = plt.subplots(figsize=(max(6, len(covs) * 0.4), 4.5))

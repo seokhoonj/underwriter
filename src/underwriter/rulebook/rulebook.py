@@ -10,10 +10,13 @@ never run on a half-assembled rule set.
 from __future__ import annotations
 
 from dataclasses import dataclass
+from pathlib import Path
 
 import polars as pl
 
-from .._kernels.io import to_polars
+from .._kernels.io import to_polars_frame
+from .._types import FrameLike
+from ..errors import RulebookError
 
 # rule-set columns that are keys / bands / declaration attributes; every other
 # column is a per-coverage decision output.
@@ -59,21 +62,21 @@ class Rulebook:
     def from_frames(
         cls,
         *,
-        disease: object,
-        ruleset: object,
-        decision: object,
-        exclusion: object,
-        reduction: object,
-        loading: object,
-        sentinel: object | None = None,
+        disease: FrameLike,
+        ruleset: FrameLike,
+        decision: FrameLike,
+        exclusion: FrameLike,
+        reduction: FrameLike,
+        loading: FrameLike,
+        sentinel: FrameLike | None = None,
     ) -> "Rulebook":
-        disease = to_polars(disease)[0]
-        ruleset = to_polars(ruleset)[0]
-        decision = to_polars(decision)[0]
-        exclusion = to_polars(exclusion)[0]
-        reduction = to_polars(reduction)[0]
-        loading = to_polars(loading)[0]
-        sentinel = to_polars(sentinel)[0] if sentinel is not None else None
+        disease = to_polars_frame(disease)
+        ruleset = to_polars_frame(ruleset)
+        decision = to_polars_frame(decision)
+        exclusion = to_polars_frame(exclusion)
+        reduction = to_polars_frame(reduction)
+        loading = to_polars_frame(loading)
+        sentinel = to_polars_frame(sentinel) if sentinel is not None else None
 
         _validate_disease(disease)
         combined = combine_ruleset(ruleset, sentinel)
@@ -91,7 +94,7 @@ class Rulebook:
         )
 
     @classmethod
-    def from_excel(cls, path: str) -> "Rulebook":
+    def from_excel(cls, path: str | Path) -> "Rulebook":
         """Load a rulebook from an xlsx workbook with the seven named sheets
         (``disease``, ``ruleset``, ``sentinel``, ``decision``, ``exclusion``,
         ``reduction``, ``loading``). Storage-format compatibility only -- the
@@ -118,8 +121,8 @@ def _validate_disease(disease: pl.DataFrame) -> None:
     required = {"kcd", "kcd_main", "sub_chk", "lookback_mon"}
     missing = required - set(disease.columns)
     if missing:
-        raise ValueError(f"disease table missing column(s): {sorted(missing)}.")
+        raise RulebookError(f"disease table missing column(s): {sorted(missing)}.")
     key = disease.filter(pl.col("kcd").is_not_null())["kcd"]
     if key.n_unique() != key.len():
         dups = key.filter(key.is_duplicated()).unique().head(5).to_list()
-        raise ValueError(f"disease table has duplicate `kcd` keys: {dups}.")
+        raise RulebookError(f"disease table has duplicate `kcd` keys: {dups}.")

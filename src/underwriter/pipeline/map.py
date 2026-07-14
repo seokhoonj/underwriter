@@ -11,13 +11,15 @@ import polars as pl
 
 from .._kernels.io import mirror_output, require_columns, to_polars
 from .._kernels.months import minus_months
+from .._types import FrameLike
+from ..errors import RulebookError
 from ..sentinels import Sentinel
 
 _NO_WINDOW = (Sentinel.IRREGULAR.value, Sentinel.UNMAPPED.value)
 _RESERVED = (Sentinel.VACANT.value, Sentinel.IRREGULAR.value)
 
 
-def map_disease(melted: object, disease_table: object) -> object:
+def map_disease(melted: FrameLike, disease_table: FrameLike) -> FrameLike:
     """Attach ``kcd_main``, ``sub_chk``, ``lookback_mon`` and the scope flags
     ``review``, ``in_lookback``, ``in_5yr`` to each melted diagnosis row."""
     frame, was_pandas = to_polars(melted)
@@ -30,19 +32,19 @@ def map_disease(melted: object, disease_table: object) -> object:
     key = disease.filter(pl.col("kcd").is_not_null())["kcd"]
     if key.n_unique() != key.len():
         dups = key.filter(key.is_duplicated()).unique().head(5).to_list()
-        raise ValueError(f"disease_table has duplicate `kcd` keys: {dups}.")
+        raise RulebookError(f"disease_table has duplicate `kcd` keys: {dups}.")
 
     lookup = disease.select("kcd", "kcd_main", "sub_chk", "lookback_mon")
     frame = frame.join(lookup, on="kcd", how="left")
 
     # 3-character-prefix fallback for rows the exact match missed
-    fb = lookup.rename(
+    fallback_lookup = lookup.rename(
         {"kcd": "_k3", "kcd_main": "_fb_main", "sub_chk": "_fb_sub", "lookback_mon": "_fb_look"}
     ).unique(subset="_k3", keep="first")
     matched = pl.col("kcd_main").is_not_null()
     frame = (
         frame.with_columns(_k3=pl.col("kcd").str.slice(0, 3))
-        .join(fb, on="_k3", how="left")
+        .join(fallback_lookup, on="_k3", how="left")
         .with_columns(
             kcd_main=pl.when(matched).then(pl.col("kcd_main")).otherwise(pl.col("_fb_main")),
             sub_chk=pl.when(matched).then(pl.col("sub_chk")).otherwise(pl.col("_fb_sub")),

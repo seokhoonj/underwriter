@@ -6,10 +6,10 @@ import underwriter as uw
 
 
 def test_make_icis_is_deterministic():
-    a = uw.make_icis(n_insured=50, seed=1)
-    b = uw.make_icis(n_insured=50, seed=1)
-    assert a.equals(b)
-    assert uw.make_icis(n_insured=50, seed=2).equals(a) is False
+    first = uw.make_icis(n_insured=50, seed=1)
+    same_seed = uw.make_icis(n_insured=50, seed=1)
+    assert same_seed.equals(first)
+    assert uw.make_icis(n_insured=50, seed=2).equals(first) is False
 
 
 def test_synthetic_front_half_loses_no_insured():

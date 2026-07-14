@@ -28,26 +28,29 @@ class RulesetDiagnosis:
     n_rule: int
     n_kcd: int
     n_auto: int
-    shadow_condition: dict
-    latent_conflict: dict
-    exact_duplicate: dict
-    no_auto_rule: dict
-    missing_sentinel: dict
+    shadow_condition: dict[str, object]  # n_row/n_kcd (int) + by_col (dict[str, int])
+    latent_conflict: dict[str, int]
+    exact_duplicate: dict[str, int]
+    no_auto_rule: dict[str, object]  # n_kcd (int) + kcds (list[str])
+    missing_sentinel: dict[str, object]  # n_kcd (int) + kcds (list[str])
 
     def __repr__(self) -> str:
-        sc, lc = self.shadow_condition, self.latent_conflict
-        ed, na, ms = self.exact_duplicate, self.no_auto_rule, self.missing_sentinel
+        shadow = self.shadow_condition
+        conflict = self.latent_conflict
+        duplicate = self.exact_duplicate
+        no_auto = self.no_auto_rule
+        missing = self.missing_sentinel
         lines = [
             f"n_rule={self.n_rule:,} | n_kcd={self.n_kcd:,} | decl_yn==0 rows={self.n_auto:,}",
-            f"  shadow_condition  : {sc['n_row']} rows across {sc['n_kcd']} kcd_main "
-            f"({', '.join(f'{k}={v}' for k, v in sc['by_col'].items()) or 'none'})",
-            f"  latent_conflict   : {lc['n_pair']} pairs across {lc['n_kcd']} kcd_main "
-            f"({lc['n_genuine']} genuine)",
-            f"  exact_duplicate   : {ed['n_group']} groups ({ed['n_extra']} redundant rows)",
-            f"  no_auto_rule      : {na['n_kcd']} kcd_main"
-            + (f" ({', '.join(na['kcds'][:8])})" if na["n_kcd"] else ""),
-            f"  missing_sentinel  : {ms['n_kcd']}"
-            + (f" ({', '.join(ms['kcds'])})" if ms["n_kcd"] else ""),
+            f"  shadow_condition  : {shadow['n_row']} rows across {shadow['n_kcd']} kcd_main "
+            f"({', '.join(f'{k}={v}' for k, v in shadow['by_col'].items()) or 'none'})",
+            f"  latent_conflict   : {conflict['n_pair']} pairs across {conflict['n_kcd']} kcd_main "
+            f"({conflict['n_genuine']} genuine)",
+            f"  exact_duplicate   : {duplicate['n_group']} groups ({duplicate['n_extra']} redundant rows)",
+            f"  no_auto_rule      : {no_auto['n_kcd']} kcd_main"
+            + (f" ({', '.join(no_auto['kcds'][:8])})" if no_auto["n_kcd"] else ""),
+            f"  missing_sentinel  : {missing['n_kcd']}"
+            + (f" ({', '.join(missing['kcds'])})" if missing["n_kcd"] else ""),
         ]
         return "\n".join(lines)
 
@@ -77,10 +80,10 @@ def diagnose_ruleset(rulebook: Rulebook) -> RulesetDiagnosis:
     }
     by_col = {k: v for k, v in by_col.items() if v > 0}
     any_condition = pl.any_horizontal([pl.col(f"_sc_{k}") for k in keys])
-    sh_rows = flagged.filter(any_condition)
+    shadow_rows = flagged.filter(any_condition)
     shadow_condition = {
-        "n_row": sh_rows.height,
-        "n_kcd": sh_rows["kcd_main"].n_unique(),
+        "n_row": shadow_rows.height,
+        "n_kcd": shadow_rows["kcd_main"].n_unique(),
         "by_col": by_col,
     }
 
@@ -110,7 +113,7 @@ def diagnose_ruleset(rulebook: Rulebook) -> RulesetDiagnosis:
     )
 
 
-def _latent_conflict(auto: pl.DataFrame, decision_columns: list[str], shadow_columns: list[str]) -> dict:
+def _latent_conflict(auto: pl.DataFrame, decision_columns: list[str], shadow_columns: list[str]) -> dict[str, int]:
     """Pairwise within kcd_main: decl_yn==0 rows whose four bands overlap and whose
     decisions differ. A pair also differing in a shadow / out_day column is
     ``shadow_explained`` (legitimate but engine-unresolvable), not genuine."""
@@ -125,7 +128,7 @@ def _latent_conflict(auto: pl.DataFrame, decision_columns: list[str], shadow_col
         lo = group.select(_BAND_LO).to_numpy()
         hi = group.select(_BAND_HI).to_numpy()
         dec = group.select(decision_columns).fill_null("").to_numpy()
-        shm = group.select(shadow_cmp).fill_null("").to_numpy() if shadow_cmp else None
+        shadow_matrix = group.select(shadow_cmp).fill_null("").to_numpy() if shadow_cmp else None
         kcd = group["kcd_main"][0]
         for i in range(m - 1):
             for j in range(i + 1, m):
@@ -133,6 +136,6 @@ def _latent_conflict(auto: pl.DataFrame, decision_columns: list[str], shadow_col
                 if overlap and (dec[i] != dec[j]).any():
                     n_pair += 1
                     kcds.add(kcd)
-                    if shm is None or not (shm[i] != shm[j]).any():
+                    if shadow_matrix is None or not (shadow_matrix[i] != shadow_matrix[j]).any():
                         n_genuine += 1
     return {"n_pair": n_pair, "n_kcd": len(kcds), "n_genuine": n_genuine}

@@ -17,7 +17,8 @@ import polars as pl
 
 from .._kernels.io import mirror_output, require_columns, to_polars
 from .._kernels.kcd import split_kcd
-from .._kernels.window import reconcile_stay_window
+from .._kernels.window import StayBasis, reconcile_stay_window
+from .._types import FrameLike
 from ..sentinels import Sentinel
 
 _DEFAULT_KCD_COLUMNS = ("kcd0", "kcd1", "kcd2", "kcd3", "kcd4")
@@ -33,11 +34,11 @@ def _parse_ymd(column: str) -> pl.Expr:
 
 
 def clean_icis(
-    claims: object,
+    claims: FrameLike,
     *,
     kcd_columns: Sequence[str] = _DEFAULT_KCD_COLUMNS,
-    method: str = "sdate",
-) -> object:
+    method: StayBasis = "sdate",
+) -> FrameLike:
     """Cleanse a raw ICIS claim table (one row per claim line).
 
     ``method`` picks which admission/discharge endpoint is trusted -- ``"sdate"``
@@ -101,12 +102,15 @@ def clean_icis(
 
     frame = frame.drop("_has_code", "_codes")
     frame = frame.unique(maintain_order=True)
-    order = [c for c in (*_COLUMN_ORDER, *kcd_columns) if c in frame.columns]
-    frame = frame.select(order)
+    # order the known schema first, but keep any caller-supplied extra columns
+    # (contract numbers, book/insurer discriminators) at the end -- never drop them.
+    known = [c for c in (*_COLUMN_ORDER, *kcd_columns) if c in frame.columns]
+    extra = [c for c in frame.columns if c not in known]
+    frame = frame.select([*known, *extra])
     return mirror_output(frame, was_pandas)
 
 
-def filter_latest_inquiry(cleaned: object) -> object:
+def filter_latest_inquiry(cleaned: FrameLike) -> FrameLike:
     """Keep each id's most recent inquiry. All rows sharing an id's maximum
     ``inq_date`` are kept (one inquiry spans many claim rows); an id whose every
     ``inq_date`` is null keeps all its rows. Every id is preserved."""

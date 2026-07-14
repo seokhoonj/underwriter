@@ -5,6 +5,7 @@ from __future__ import annotations
 import datetime as dt
 
 import polars as pl
+import pytest
 
 from underwriter.pipeline.clean import clean_icis, filter_latest_inquiry
 
@@ -57,6 +58,34 @@ def test_exact_duplicate_rows_are_dropped():
     df = pl.DataFrame([_claim(kcd0="A00"), _claim(kcd0="A00")])
     out = clean_icis(df)
     assert out.height == 1
+
+
+def test_clean_icis_keeps_caller_supplied_extra_columns():
+    # a book/contract discriminator the pipeline does not know must not be dropped
+    df = pl.DataFrame([_claim(kcd0="A00", policy_no="X1", book="alpha")])
+    out = clean_icis(df)
+    assert "policy_no" in out.columns and "book" in out.columns
+    assert out.select(["policy_no", "book"]).row(0) == ("X1", "alpha")
+
+
+def test_clean_icis_mirrors_pandas_input_type():
+    pd = pytest.importorskip("pandas")
+    out = clean_icis(pd.DataFrame([_claim(kcd0="A00")]))
+    assert isinstance(out, pd.DataFrame)
+    assert out["kcd0"].tolist() == ["A00"]
+
+
+def test_edate_method_derives_admission_from_discharge():
+    df = pl.DataFrame([_claim(id="6", kcd0="A00", hos_day=5, sdate=None, edate="20240105")])
+    out = clean_icis(df, method="edate")
+    assert out["sdate"].to_list() == [dt.date(2024, 1, 1)]  # edate - 5 + 1
+    assert out["edate"].to_list() == [dt.date(2024, 1, 5)]
+
+
+def test_auto_method_uses_edate_basis_when_admission_is_missing():
+    df = pl.DataFrame([_claim(id="7", kcd0="A00", hos_day=3, sdate=None, edate="20240110")])
+    out = clean_icis(df, method="auto")
+    assert out["sdate"].to_list() == [dt.date(2024, 1, 8)]  # edate - 3 + 1
 
 
 def test_filter_latest_inquiry_keeps_max_and_never_drops_ids():

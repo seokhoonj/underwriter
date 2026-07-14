@@ -15,6 +15,7 @@ from dataclasses import dataclass
 
 import polars as pl
 
+from ..errors import UnderwriterError
 from .tokens import Grammar, months_str, resolve_months, unresolved_reason
 
 _CELL_SCHEMA = {"id": pl.String, "coverage": pl.String, "dec": pl.String}
@@ -102,8 +103,12 @@ def combine_decisions(
 
     cells = _compose(results, grammar, all_cells)
     combined = cells.pivot(on="coverage", index="id", values="dec")
-    if combined.height != applied["id"].n_unique():
-        raise AssertionError("combine_decisions produced != one row per insured.")
+    n_insured = applied["id"].n_unique()
+    if combined.height != n_insured:
+        raise UnderwriterError(
+            f"combine produced {combined.height} rows for {n_insured} insured; "
+            "expected exactly one per insured."
+        )
     return DecisionResult(combined=combined, cells=cells, unresolved=report)
 
 

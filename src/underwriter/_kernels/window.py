@@ -17,14 +17,19 @@ reconciled; no other column is touched.
 
 from __future__ import annotations
 
+from typing import Literal
+
 import polars as pl
+
+#: Which admission/discharge endpoint the stay reconciliation trusts.
+StayBasis = Literal["sdate", "edate", "auto"]
 
 
 def _days(n: pl.Expr) -> pl.Expr:
     return pl.duration(days=n)
 
 
-def reconcile_stay_window(frame: pl.DataFrame, method: str = "sdate") -> pl.DataFrame:
+def reconcile_stay_window(frame: pl.DataFrame, method: StayBasis = "sdate") -> pl.DataFrame:
     if method == "sdate":
         return _reconcile_sdate(frame)
     if method == "edate":

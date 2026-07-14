@@ -68,6 +68,12 @@ def test_expired_placeholder_for_aged_out():
     assert row.select(["hos_day", "sur_cnt", "out_cnt"]).row(0) == (0, 0, 0)
 
 
+def test_unmapped_valid_code_survives_as_unmapped():
+    # Z99 is a well-formed code the disease table has no row for -> UNMAPPED, kept
+    claims, agg = _run([_claim(id="C", kcd0="Z99", sdate="20240301")])
+    assert agg.filter(pl.col("id") == "C")["kcd_main"].to_list() == ["UNMAPPED"]
+
+
 def test_vacant_only_insured_survives_as_vacant():
     claims, agg = _run([_claim(id="B")])
     assert agg.filter(pl.col("id") == "B")["kcd_main"].to_list() == ["VACANT"]

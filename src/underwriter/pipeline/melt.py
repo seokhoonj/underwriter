@@ -7,11 +7,12 @@ from collections.abc import Sequence
 import polars as pl
 
 from .._kernels.io import mirror_output, to_polars
+from .._types import FrameLike
 
 _DEFAULT_KCD_COLUMNS = ("kcd0", "kcd1", "kcd2", "kcd3", "kcd4")
 
 
-def melt_kcd(cleaned: object, *, kcd_columns: Sequence[str] = _DEFAULT_KCD_COLUMNS) -> object:
+def melt_kcd(cleaned: FrameLike, *, kcd_columns: Sequence[str] = _DEFAULT_KCD_COLUMNS) -> FrameLike:
     """Wide (``kcd0..kcd4``) -> long: one row per non-null code, carrying every
     other column. ``sub_kcd`` is ``0`` for the main diagnosis (``kcd0``) and ``1``
     for a sub-diagnosis."""

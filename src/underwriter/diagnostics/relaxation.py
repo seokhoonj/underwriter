@@ -21,10 +21,10 @@ from ..engine.match import MatchResult
 from ..engine.underwriter import Underwriter
 
 
-def _as_list(x: str | Sequence[str] | None) -> list[str] | None:
-    if x is None:
+def _as_list(value: str | Sequence[str] | None) -> list[str] | None:
+    if value is None:
         return None
-    return [x] if isinstance(x, str) else list(x)
+    return [value] if isinstance(value, str) else list(value)
 
 
 def _auto_share(decision: Decision) -> pl.DataFrame:

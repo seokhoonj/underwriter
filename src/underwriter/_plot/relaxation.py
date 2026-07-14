@@ -3,9 +3,15 @@ and one rule's per-coverage before/after (a dumbbell)."""
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import polars as pl
 
 from .theme import BAR_BLUE, BASELINE_GREY, import_pyplot, style_axes
+
+if TYPE_CHECKING:  # pragma: no cover - typing only (optional matplotlib dep)
+    from matplotlib.axes import Axes
+    from matplotlib.figure import Figure
 
 
 def plot_rule_impact(
@@ -15,8 +21,8 @@ def plot_rule_impact(
     top: int = 12,
     fill: str = BAR_BLUE,
     title: str | None = None,
-    ax=None,
-):
+    ax: Axes | None = None,
+) -> Figure:
     """Horizontal bar ranking of the diseases to relax, from ``list_rule_impact``.
     Pass ``coverage`` to pick one when the table is per-coverage."""
     plt = import_pyplot()
@@ -52,8 +58,8 @@ def plot_relaxed_rule(
     *,
     disease: str | None = None,
     title: str | None = None,
-    ax=None,
-):
+    ax: Axes | None = None,
+) -> Figure:
     """Dumbbell of the automation rate per coverage before vs after relaxing,
     from ``relax_rule`` (only the coverages the relaxation moves)."""
     plt = import_pyplot()

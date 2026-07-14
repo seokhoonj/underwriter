@@ -5,12 +5,21 @@ class letters and their roles are read off the table.
 
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass
 
 import polars as pl
 
+from ..errors import GrammarError
+
 _COMBINERS = ("priority", "exclusion", "loading", "reduction")
 _REGEX_METACHARACTERS = set(r".^$*+?()[]{}|\\")
+
+#: A rulebook period mark counts fixed 30-day months (truncated), not calendar months.
+DAYS_PER_RULE_MONTH = 30
+#: The mark that means "the whole policy period", and the month count that encodes it.
+WHOLE_PERIOD_MARK = "99"
+WHOLE_PERIOD_MONTHS = 9999
 
 
 @dataclass(frozen=True)
@@ -35,7 +44,7 @@ class Grammar:
         combiner = dict(zip(codes, decision["combiner"].to_list()))
         unknown = sorted({m for m in combiner.values() if m not in _COMBINERS})
         if unknown:
-            raise ValueError(f"decision combiners must be one of {_COMBINERS}; found {unknown}.")
+            raise GrammarError(f"decision combiners must be one of {_COMBINERS}; found {unknown}.")
         priority = dict(zip(codes, (int(p) for p in decision["priority"].to_list())))
 
         def by_combiner(name: str) -> str | None:
@@ -60,7 +69,7 @@ class Grammar:
         decline = by_role("decline") or min(priority, key=priority.get)
         underwriter = by_role("underwriter")
         if underwriter is None:
-            raise ValueError(
+            raise GrammarError(
                 "decision table needs a row with role == 'underwriter'; "
                 "unmatched diseases are referred there."
             )
@@ -89,23 +98,23 @@ class Grammar:
 def _check_codes(codes: list[str]) -> None:
     wide = sorted({c for c in codes if len(str(c)) != 1})
     if wide:
-        raise ValueError(f"decision codes must be one character; found {wide}.")
+        raise GrammarError(f"decision codes must be one character; found {wide}.")
     meta = sorted({c for c in codes if c in _REGEX_METACHARACTERS})
     if meta:
-        raise ValueError(f"decision codes must not be regex metacharacters; found {meta}.")
+        raise GrammarError(f"decision codes must not be regex metacharacters; found {meta}.")
     dups = sorted({c for c in codes if codes.count(c) > 1})
     if dups:
-        raise ValueError(f"decision table has duplicate codes: {dups}.")
+        raise GrammarError(f"decision table has duplicate codes: {dups}.")
 
 
 def _max_sites(decision: pl.DataFrame, exclusion: str | None) -> int | None:
     if exclusion is None:
         return None
     if "max_sites" not in decision.columns:
-        raise ValueError("decision table needs a `max_sites` column for the exclusion code.")
+        raise GrammarError("decision table needs a `max_sites` column for the exclusion code.")
     cap = decision.filter(pl.col("code") == exclusion)["max_sites"].to_list()
     if not cap or cap[0] is None or int(cap[0]) < 1:
-        raise ValueError(
+        raise GrammarError(
             f"decision table needs a positive `max_sites` on exclusion code {exclusion!r}; "
             "write a large number for no cap."
         )
@@ -117,8 +126,6 @@ def unresolved_reason(
 ) -> str:
     """Empty string if the code is resolvable, else why it is not. Judged on the
     code text alone (independent of elapsed days / merging)."""
-    import re
-
     letter = code[0]
     if letter not in grammar.priority:  # priority holds every declared code
         return f'class letter "{letter}" is not in decision table'
@@ -146,14 +153,14 @@ def resolve_months(mark: pl.Expr, elp_day: pl.Expr, valid_marks: list[str]) -> p
     """A period mark ("5i" = 5yr minus elapsed, "3" = 3yr fixed, "99" = whole
     period) to a remaining-month count. <= 0 means expired; null means invalid.
     30 days = 1 month, truncated."""
-    elapsed = (elp_day // 30).cast(pl.Int64)
+    elapsed = (elp_day // DAYS_PER_RULE_MONTH).cast(pl.Int64)
     base = mark.str.replace("i", "", literal=True).cast(pl.Int64, strict=False)
     months = pl.when(mark.str.ends_with("i")).then(base * 12 - elapsed).otherwise(base * 12)
-    months = pl.when(mark == "99").then(pl.lit(9999)).otherwise(months)
+    months = pl.when(mark == WHOLE_PERIOD_MARK).then(pl.lit(WHOLE_PERIOD_MONTHS)).otherwise(months)
     return pl.when(mark.is_in(valid_marks)).then(months).otherwise(None).cast(pl.Int64)
 
 
 def months_str(months: pl.Expr) -> pl.Expr:
     return (
-        pl.when(months >= 9999).then(pl.lit("99")).otherwise(months.cast(pl.Utf8))
+        pl.when(months >= WHOLE_PERIOD_MONTHS).then(pl.lit(WHOLE_PERIOD_MARK)).otherwise(months.cast(pl.Utf8))
     )

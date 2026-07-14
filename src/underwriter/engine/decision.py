@@ -4,8 +4,13 @@ per coverage. Its methods only read/transform the result."""
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
 
 import polars as pl
+
+if TYPE_CHECKING:  # pragma: no cover - typing only (optional matplotlib dep)
+    from matplotlib.axes import Axes
+    from matplotlib.figure import Figure
 
 
 @dataclass(frozen=True)
@@ -51,12 +56,28 @@ class Decision:
         """The per-coverage decision cells for one insured."""
         return self.cells.filter(pl.col("id") == insured_id).sort("coverage")
 
-    def plot(self, **kwargs):
-        """Stacked bar of the decision composition per coverage (needs
-        matplotlib). Keyword args pass through to ``plot_decision``."""
+    def plot(
+        self,
+        *,
+        group: str = "auto",
+        order: str = "auto_high",
+        min_label: float = 0.03,
+        title: str = "Decision composition per coverage",
+        ax: Axes | None = None,
+    ) -> Figure:
+        """Stacked bar of the decision composition per coverage (needs matplotlib).
+        ``group`` is ``"auto"`` (auto vs referred) or ``"category"``; ``order``
+        sorts coverages by ``"auto_high"``/``"auto_low"``/``"column"``."""
         from .._plot.decision import plot_decision
 
-        return plot_decision(self.tabulate(), **kwargs)
+        return plot_decision(
+            self.tabulate(),
+            group=group,
+            order=order,
+            min_label=min_label,
+            title=title,
+            ax=ax,
+        )
 
     def __repr__(self) -> str:
         return (

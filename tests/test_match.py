@@ -10,12 +10,14 @@ from underwriter._kernels.band import band_match
 _DECISIONS = ["life", "adb"]
 
 
-def _rule(no, kcd_main, *, ord=1, decl_yn=0, age=(0, 999), elp=(0, 9999),
-          sur=(0, 999), hos=(0, 9999), life="S", adb="S"):
+def _rule(no, kcd_main, *, ord=1, decl_yn=0, age_band=(0, 999), elp_day_band=(0, 9999),
+          sur_cnt_band=(0, 999), hos_day_band=(0, 9999), life="S", adb="S"):
     return {
         "no": no, "kcd_main": kcd_main, "ord": ord, "decl_yn": decl_yn,
-        "age_min": age[0], "age_max": age[1], "elp_day_min": elp[0], "elp_day_max": elp[1],
-        "sur_cnt_min": sur[0], "sur_cnt_max": sur[1], "hos_day_min": hos[0], "hos_day_max": hos[1],
+        "age_min": age_band[0], "age_max": age_band[1],
+        "elp_day_min": elp_day_band[0], "elp_day_max": elp_day_band[1],
+        "sur_cnt_min": sur_cnt_band[0], "sur_cnt_max": sur_cnt_band[1],
+        "hos_day_min": hos_day_band[0], "hos_day_max": hos_day_band[1],
         "life": life, "adb": adb,
     }
 

@@ -12,6 +12,7 @@ import polars as pl
 
 from .._kernels.io import mirror_output, to_polars
 from .._kernels.stay import count_stay
+from .._types import FrameLike
 from ..sentinels import Sentinel
 
 _VACANT = Sentinel.VACANT.value
@@ -43,7 +44,7 @@ def _min_elapsed(rows: pl.DataFrame, out: str) -> pl.DataFrame:
     return rows.group_by("id", "kcd_main").agg(pl.col("elapsed").min().alias(out))
 
 
-def aggregate_disease(mapped: object) -> object:
+def aggregate_disease(mapped: FrameLike) -> FrameLike:
     frame, was_pandas = to_polars(mapped)
     reviewed = frame.filter(pl.col("review") == 1).with_columns(elapsed=_elapsed())
 
@@ -101,7 +102,7 @@ def aggregate_disease(mapped: object) -> object:
 
     # age (per insured) from the whole mapped table -- so an id with no reviewed
     # row still has an age.
-    ages = frame.group_by("id").agg(pl.col("age").cast(pl.Int32).max().alias("age"))
+    ages = frame.group_by("id").agg(pl.col("age").cast(pl.Int32, strict=False).max().alias("age"))
     result = result.join(ages, on="id", how="left")
 
     # EXPIRED: every id in `mapped` must leave with a row. Ids with nothing in

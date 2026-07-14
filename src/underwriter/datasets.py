@@ -22,6 +22,12 @@ _DISEASE = (
 )
 _CODES = [d[0] for d in _DISEASE]
 
+# synthetic claim-line mix: cumulative thresholds on a uniform(0,1) draw per line.
+_P_VACANT = 0.06     # below this -> a codeless line (VACANT)
+_P_IRREGULAR = 0.10  # up to here -> an unreadable code (IRREGULAR)
+_P_MULTI_CODE = 0.16  # up to here -> a two-code cell; otherwise a single real code
+_P_AGED_OUT = 0.08   # fraction of insured whose treatments all predate the window
+
 
 def make_disease_table() -> pl.DataFrame:
     """A small synthetic KCD -> disease lookup for :func:`~underwriter.map_disease`."""
@@ -57,19 +63,19 @@ def make_icis(n_insured: int = 300, seed: int = 0) -> pl.DataFrame:
         draw = rng.random()
         n_lines = int(rng.integers(1, 5))
         for _ in range(n_lines):
-            # 6% codeless (VACANT), 4% unreadable (IRREGULAR), else a real code
+            # codeless (VACANT), unreadable (IRREGULAR), multi-code, else a real code
             r = rng.random()
-            if r < 0.06:
+            if r < _P_VACANT:
                 cells = [None, None, None, None, None]
-            elif r < 0.10:
+            elif r < _P_IRREGULAR:
                 cells = ["??", None, None, None, None]
-            elif r < 0.16:  # a multi-code cell
+            elif r < _P_MULTI_CODE:
                 a, b = rng.choice(_CODES, size=2, replace=False)
                 cells = [f"{a},{b}", None, None, None, None]
             else:
                 cells = [str(rng.choice(_CODES)), None, None, None, None]
 
-            aged_out = draw < 0.08  # a fraction have only old treatments -> EXPIRED
+            aged_out = draw < _P_AGED_OUT  # only old treatments -> EXPIRED
             acc = _ymd(rng, 2016, 2018) if aged_out else _ymd(rng, 2021, 2024)
             inpatient = rng.random() < 0.35
             hos_day = int(rng.integers(1, 21)) if inpatient else 0

@@ -8,14 +8,17 @@ import polars as pl
 import pytest
 
 import underwriter as uw
+from underwriter.errors import RulebookError, UnderwriterError
 
 
-def _rule(no, kcd_main, *, ord=1, decl_yn=0, age=(0, 999), elp=(0, 9999), sur=(0, 999),
-          hos=(0, 9999), life="S", hoscov="S"):
+def _rule(no, kcd_main, *, ord=1, decl_yn=0, age_band=(0, 999), elp_day_band=(0, 9999),
+          sur_cnt_band=(0, 999), hos_day_band=(0, 9999), life="S", hoscov="S"):
     return {
         "no": no, "kcd_main": kcd_main, "ord": ord, "decl_yn": decl_yn,
-        "age_min": age[0], "age_max": age[1], "elp_day_min": elp[0], "elp_day_max": elp[1],
-        "sur_cnt_min": sur[0], "sur_cnt_max": sur[1], "hos_day_min": hos[0], "hos_day_max": hos[1],
+        "age_min": age_band[0], "age_max": age_band[1],
+        "elp_day_min": elp_day_band[0], "elp_day_max": elp_day_band[1],
+        "sur_cnt_min": sur_cnt_band[0], "sur_cnt_max": sur_cnt_band[1],
+        "hos_day_min": hos_day_band[0], "hos_day_max": hos_day_band[1],
         "out_day_min": 0, "out_day_max": 9999, "life": life, "hos": hoscov,
     }
 
@@ -93,6 +96,14 @@ def test_unmatched_is_referred_to_underwriter():
     assert dec.combined.filter(pl.col("id") == "9").select(["life", "hos"]).row(0) == ("U", "U")
 
 
+def test_run_returns_one_row_per_raw_insured():
+    # the whole pipeline (clean -> map -> aggregate -> underwrite) must preserve
+    # every insured exactly once, even when most codes fall through to UNMAPPED.
+    claims = uw.make_icis(80, seed=7)
+    dec = uw.Underwriter(_mini_rulebook()).run(claims)
+    assert dec.combined.height == claims["id"].n_unique()
+
+
 def test_diagnose_ruleset_is_clean_on_the_mini_rulebook():
     d = uw.diagnose_ruleset(_mini_rulebook())
     assert d.missing_sentinel["n_kcd"] == 0
@@ -106,6 +117,38 @@ def test_relax_rule_lifts_only_referrals():
     m = eng.match(agg)
     out = uw.relax_rule(eng, m, "A00", coverage="life")
     assert out["lift"][0] > 0  # relaxing A00 lifts life's auto share
+
+
+def test_diagnose_icis_counts_duplicates_and_no_diagnosis_rows():
+    rows = [
+        {"id": "1", "gender": "1", "age": 40, "inq_date": "20240601", "pay_date": "20240110",
+         "acc_date": "20240101", "sdate": None, "edate": None, "hos_day": 0, "hos_cnt": 0,
+         "sur_cnt": 0, "kcd0": "A00", "kcd1": None, "kcd2": None, "kcd3": None, "kcd4": None},
+    ]
+    rows.append(dict(rows[0]))                       # an exact duplicate row
+    rows.append({**rows[0], "id": "2", "kcd0": None})  # a codeless line -> no diagnosis
+    report = uw.diagnose_icis(pl.DataFrame(rows))
+    assert (report.n_row, report.n_id) == (3, 2)
+    assert report.row_anomaly["duplicate rows"]["n_row"] == 1
+    assert report.no_diagnosis["all_empty"]["n_row"] == 1
+    assert report.no_diagnosis["all_empty_ids"] == 1
+
+
+def test_rulebook_error_is_an_underwriter_error_and_a_value_error():
+    # domain errors stay catchable as ValueError (back-compat) and as UnderwriterError
+    with pytest.raises(UnderwriterError):
+        uw.Rulebook.from_frames(
+            disease=pl.DataFrame({"kcd": ["M51", "M51"], "kcd_main": ["M51", "M51"],
+                                  "sub_chk": [1, 1], "lookback_mon": [60, 60]}),
+            ruleset=pl.DataFrame([_rule(1, "M51")]),
+            decision=pl.DataFrame({"priority": [2, 5], "code": ["U", "S"],
+                                   "combiner": ["priority", "priority"],
+                                   "role": ["underwriter", "standard"], "auto": [0, 1],
+                                   "max_sites": [None, None]}),
+            exclusion=pl.DataFrame({"mark": ["3"]}), reduction=pl.DataFrame({"mark": ["3"]}),
+            loading=pl.DataFrame({"at_least": [0], "decision": ["S"]}),
+        )
+    assert issubclass(RulebookError, ValueError)
 
 
 def test_rulebook_rejects_duplicate_disease_key():
