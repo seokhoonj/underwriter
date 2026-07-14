@@ -8,19 +8,45 @@ version = "0.1.0"
 authors = [
     { name = "Seokhoon Joo", email = "seokhoonj@gmail.com" },
 ]
-description = "The automated underwriter for Korean life insurance industry"
+description = "Automated underwriting from insurance claim history."
 readme = "README.md"
-requires-python = ">=3.6"
+requires-python = ">=3.10"
+license = "MIT"
+keywords = [
+    "actuarial",
+    "insurance",
+    "underwriting",
+    "claim history",
+    "health insurance",
+]
 classifiers = [
-    "Programming Language :: Python :: 3",
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Financial and Insurance Industry",
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering",
 ]
 dependencies = [
-    "numpy>=1.18.0",
-    "pandas>=1.0.0",
+    "polars>=1.0",
 ]
+
+[project.optional-dependencies]
+pandas = ["pandas>=1.5", "pyarrow>=12.0"]
+excel = ["fastexcel>=0.10"]
+plot = ["matplotlib>=3.7"]
+dev = ["pytest>=7.0", "pandas>=1.5", "pyarrow>=12.0", "fastexcel>=0.10", "matplotlib>=3.7"]
 
 [project.urls]
 Homepage = "https://github.com/seokhoonj/underwriter"
 
+[tool.hatch.build.targets.wheel]
+packages = ["src/underwriter"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
