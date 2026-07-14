@@ -21,6 +21,14 @@ from ._plot.relaxation import plot_relaxed_rule, plot_rule_impact
 from .engine.decision import Decision
 from .engine.match import MatchResult
 from .engine.underwriter import Underwriter
+from .errors import (
+    FrameTypeError,
+    GrammarError,
+    InputError,
+    MissingColumnsError,
+    RulebookError,
+    UnderwriterError,
+)
 from .pipeline.aggregate import aggregate_disease
 from .pipeline.clean import clean_icis, filter_latest_inquiry
 from .pipeline.map import map_disease
@@ -33,12 +41,18 @@ __version__ = "0.1.0"
 __all__ = [
     "SENTINELS",
     "Decision",
+    "FrameTypeError",
+    "GrammarError",
     "IcisDiagnosis",
+    "InputError",
     "MatchResult",
+    "MissingColumnsError",
     "Rulebook",
+    "RulebookError",
     "RulesetDiagnosis",
     "Sentinel",
     "Underwriter",
+    "UnderwriterError",
     "__version__",
     "aggregate_disease",
     "clean_icis",

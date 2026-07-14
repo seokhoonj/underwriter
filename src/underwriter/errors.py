@@ -30,3 +30,8 @@ class GrammarError(UnderwriterError, ValueError):
 
 class FrameTypeError(UnderwriterError, TypeError):
     """A public boundary was handed something that is neither polars nor pandas."""
+
+
+class InputError(UnderwriterError, ValueError):
+    """A public function was called with an unusable argument or empty input
+    (an empty frame to diagnose, a bad relaxation pattern, nothing to plot)."""

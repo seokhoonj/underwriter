@@ -96,6 +96,42 @@ def test_unmatched_is_referred_to_underwriter():
     assert dec.combined.filter(pl.col("id") == "9").select(["life", "hos"]).row(0) == ("U", "U")
 
 
+def test_diagnose_ruleset_separates_genuine_and_shadow_explained_conflicts():
+    # GN: two overlapping rules whose life decision differs -> a genuine conflict.
+    # SH: also differ, but a shadow column (recover) explains it -> not genuine.
+    decision = pl.DataFrame(
+        {"priority": [1, 2, 5], "code": ["D", "U", "S"], "combiner": ["priority"] * 3,
+         "role": ["decline", "underwriter", "standard"], "auto": [1, 0, 1], "max_sites": [None] * 3}
+    )
+    disease = pl.DataFrame(
+        {"kcd": ["GN", "SH"], "kcd_main": ["GN", "SH"], "sub_chk": [1, 1], "lookback_mon": [60, 60]}
+    )
+
+    def rule(no, kcd_main, life, age_band, recover=""):
+        return {
+            "no": no, "kcd_main": kcd_main, "ord": no, "decl_yn": 0,
+            "age_min": age_band[0], "age_max": age_band[1], "elp_day_min": 0, "elp_day_max": 9999,
+            "sur_cnt_min": 0, "sur_cnt_max": 999, "hos_day_min": 0, "hos_day_max": 9999,
+            "out_day_min": 0, "out_day_max": 9999, "recover": recover, "life": life, "hos": "S",
+        }
+
+    ruleset = pl.DataFrame([
+        rule(1, "GN", "S", (0, 50)), rule(2, "GN", "U", (40, 99)),
+        rule(3, "SH", "S", (0, 50), recover="a"), rule(4, "SH", "U", (40, 99), recover="b"),
+    ])
+    sentinel = pl.DataFrame(
+        [{k: v for k, v in rule(0, s, "S", (0, 999)).items() if k != "no"}
+         for s in ("VACANT", "EXPIRED", "IRREGULAR", "UNMAPPED")]
+    )
+    book = uw.Rulebook.from_frames(
+        disease=disease, ruleset=ruleset, sentinel=sentinel, decision=decision,
+        exclusion=pl.DataFrame({"mark": ["3"]}), reduction=pl.DataFrame({"mark": ["3"]}),
+        loading=pl.DataFrame({"at_least": [0], "decision": ["S"]}),
+    )
+    conflict = uw.diagnose_ruleset(book).latent_conflict
+    assert conflict == {"n_pair": 2, "n_kcd": 2, "n_genuine": 1}
+
+
 def test_run_returns_one_row_per_raw_insured():
     # the whole pipeline (clean -> map -> aggregate -> underwrite) must preserve
     # every insured exactly once, even when most codes fall through to UNMAPPED.
@@ -149,6 +185,19 @@ def test_rulebook_error_is_an_underwriter_error_and_a_value_error():
             loading=pl.DataFrame({"at_least": [0], "decision": ["S"]}),
         )
     assert issubclass(RulebookError, ValueError)
+
+
+def test_public_input_guards_raise_underwriter_error():
+    # every public entry point's argument guard is catchable as UnderwriterError
+    book = _mini_rulebook()
+    agg = _aggregated([{"id": "2", "kcd_main": "A00"}])
+    match = uw.Underwriter(book).match(agg)
+    with pytest.raises(UnderwriterError):
+        uw.relax_rule(uw.Underwriter(book), match, [])          # no patterns
+    with pytest.raises(UnderwriterError):
+        uw.diagnose_icis(pl.DataFrame({"id": []}))              # empty frame
+    with pytest.raises(ValueError):                             # still a ValueError too
+        uw.diagnose_icis(pl.DataFrame({"id": []}))
 
 
 def test_rulebook_rejects_duplicate_disease_key():

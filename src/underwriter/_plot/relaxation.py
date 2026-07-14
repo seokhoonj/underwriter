@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING
 
 import polars as pl
 
+from ..errors import InputError
 from .theme import BAR_BLUE, BASELINE_GREY, import_pyplot, style_axes
 
 if TYPE_CHECKING:  # pragma: no cover - typing only (optional matplotlib dep)
@@ -30,9 +31,9 @@ def plot_rule_impact(
     if "coverage" in data.columns and coverage is not None:
         data = data.filter(pl.col("coverage") == coverage)
     if "coverage" in data.columns and data["coverage"].n_unique() > 1:
-        raise ValueError('per-coverage ranking: pass coverage="<name>" to pick one.')
+        raise InputError('per-coverage ranking: pass coverage="<name>" to pick one.')
     if data.height == 0:
-        raise ValueError("no rows to plot.")
+        raise InputError("no rows to plot.")
 
     data = data.sort("auto_lift", descending=True).head(top).sort("auto_lift")
     labels = data["kcd_main"].to_list()
@@ -65,7 +66,7 @@ def plot_relaxed_rule(
     plt = import_pyplot()
     data = relaxed.filter(pl.col("auto_relaxed") != pl.col("auto_base")).sort("auto_relaxed")
     if data.height == 0:
-        raise ValueError("this relaxation moved no coverage; nothing to plot.")
+        raise InputError("this relaxation moved no coverage; nothing to plot.")
 
     covs = data["coverage"].to_list()
     base = [v * 100 for v in data["auto_base"].to_list()]

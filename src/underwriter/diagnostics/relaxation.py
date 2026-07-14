@@ -19,6 +19,7 @@ import polars as pl
 from ..engine.decision import Decision
 from ..engine.match import MatchResult
 from ..engine.underwriter import Underwriter
+from ..errors import InputError
 
 
 def _as_list(value: str | Sequence[str] | None) -> list[str] | None:
@@ -49,7 +50,7 @@ def relax_rule(
     draw it with ``plot_relaxed_rule``."""
     patterns = _as_list(kcd_main)
     if not patterns or any(not p for p in patterns):
-        raise ValueError("kcd_main must be one or more non-empty patterns.")
+        raise InputError("kcd_main must be one or more non-empty patterns.")
     target = "|".join(patterns)
     grammar = engine.grammar
     standard, underwriter = grammar.standard, grammar.underwriter
@@ -158,7 +159,7 @@ def decompose_rule_impact(
     the co-held cells the marginals miss), per coverage."""
     targets = list(dict.fromkeys(kcd_main))
     if len(targets) < 2:
-        raise ValueError("kcd_main must name at least two representative codes.")
+        raise InputError("kcd_main must name at least two representative codes.")
     if baseline is None:
         baseline = engine.decide(match_result)
     cov = _as_list(coverage)

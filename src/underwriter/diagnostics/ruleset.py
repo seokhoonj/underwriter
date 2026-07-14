@@ -116,26 +116,36 @@ def diagnose_ruleset(rulebook: Rulebook) -> RulesetDiagnosis:
 def _latent_conflict(auto: pl.DataFrame, decision_columns: list[str], shadow_columns: list[str]) -> dict[str, int]:
     """Pairwise within kcd_main: decl_yn==0 rows whose four bands overlap and whose
     decisions differ. A pair also differing in a shadow / out_day column is
-    ``shadow_explained`` (legitimate but engine-unresolvable), not genuine."""
+    ``shadow_explained`` (legitimate but engine-unresolvable), not genuine.
+
+    A self-join on kcd_main pairs the rows; ``_i < _i_b`` keeps each unordered pair
+    once. A null band bound never overlaps (the same "NA never matches" the engine's
+    band join gives), so each band comparison fills null to ``False``.
+    """
     shadow_cmp = [c for c in shadow_columns if c in auto.columns]
     shadow_cmp += [c for c in ("out_day_min", "out_day_max") if c in auto.columns]
-    n_pair = n_genuine = 0
-    kcds: set[str] = set()
-    for group in auto.partition_by("kcd_main"):
-        m = group.height
-        if m < 2:
-            continue
-        lo = group.select(_BAND_LO).to_numpy()
-        hi = group.select(_BAND_HI).to_numpy()
-        dec = group.select(decision_columns).fill_null("").to_numpy()
-        shadow_matrix = group.select(shadow_cmp).fill_null("").to_numpy() if shadow_cmp else None
-        kcd = group["kcd_main"][0]
-        for i in range(m - 1):
-            for j in range(i + 1, m):
-                overlap = (lo[i] <= hi[j]).all() and (lo[j] <= hi[i]).all()
-                if overlap and (dec[i] != dec[j]).any():
-                    n_pair += 1
-                    kcds.add(kcd)
-                    if shadow_matrix is None or not (shadow_matrix[i] != shadow_matrix[j]).any():
-                        n_genuine += 1
-    return {"n_pair": n_pair, "n_kcd": len(kcds), "n_genuine": n_genuine}
+
+    keep = list(dict.fromkeys(["kcd_main", *_BAND_LO, *_BAND_HI, *decision_columns, *shadow_cmp]))
+    indexed = auto.select(keep).with_row_index("_i")
+    pairs = indexed.join(indexed, on="kcd_main", suffix="_b").filter(pl.col("_i") < pl.col("_i_b"))
+    if pairs.height == 0:
+        return {"n_pair": 0, "n_kcd": 0, "n_genuine": 0}
+
+    overlap_terms = []
+    for lo, hi in zip(_BAND_LO, _BAND_HI):
+        overlap_terms.append((pl.col(lo) <= pl.col(f"{hi}_b")).fill_null(False))
+        overlap_terms.append((pl.col(f"{lo}_b") <= pl.col(hi)).fill_null(False))
+    overlap = pl.all_horizontal(overlap_terms)
+    decision_diff = pl.any_horizontal(
+        pl.col(c).fill_null("") != pl.col(f"{c}_b").fill_null("") for c in decision_columns
+    )
+    shadow_diff = (
+        pl.any_horizontal(pl.col(c).fill_null("") != pl.col(f"{c}_b").fill_null("") for c in shadow_cmp)
+        if shadow_cmp else pl.lit(False)
+    )
+    conflicts = pairs.filter(overlap & decision_diff).with_columns(_genuine=~shadow_diff)
+    return {
+        "n_pair": conflicts.height,
+        "n_kcd": conflicts["kcd_main"].n_unique(),
+        "n_genuine": int(conflicts["_genuine"].sum()),
+    }

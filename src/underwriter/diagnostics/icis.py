@@ -15,6 +15,7 @@ import polars as pl
 
 from .._kernels.io import to_polars
 from .._types import FrameLike
+from ..errors import InputError
 from ..sentinels import Sentinel
 
 _DATE_COLUMNS = ("acc_date", "sdate", "edate", "pay_date", "inq_date")
@@ -264,7 +265,7 @@ def diagnose_icis(frame_like: FrameLike) -> IcisDiagnosis:
     """
     frame, _ = to_polars(frame_like)
     if frame.height == 0:
-        raise ValueError("`frame_like` has no rows to diagnose.")
+        raise InputError("`frame_like` has no rows to diagnose.")
     n_row = frame.height
     n_id = frame["id"].n_unique()
     original_columns = frame.columns  # for the duplicate check, before augmenting

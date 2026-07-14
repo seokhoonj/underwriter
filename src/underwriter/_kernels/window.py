@@ -21,6 +21,8 @@ from typing import Literal
 
 import polars as pl
 
+from ..errors import InputError
+
 #: Which admission/discharge endpoint the stay reconciliation trusts.
 StayBasis = Literal["sdate", "edate", "auto"]
 
@@ -36,7 +38,7 @@ def reconcile_stay_window(frame: pl.DataFrame, method: StayBasis = "sdate") -> p
         return _reconcile_edate(frame)
     if method == "auto":
         return _reconcile_auto(frame)
-    raise ValueError(f"method must be 'sdate', 'edate', or 'auto'; got {method!r}.")
+    raise InputError(f"method must be 'sdate', 'edate', or 'auto'; got {method!r}.")
 
 
 def _reconcile_sdate(frame: pl.DataFrame) -> pl.DataFrame:
